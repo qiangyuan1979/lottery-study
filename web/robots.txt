@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /data/
+
+# 面向大模型的内容索引（非标准但被越来越多的抓取方采用）
+# See: /llms.txt
+
+Sitemap: http://127.0.0.1:8123/sitemap.xml

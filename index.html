@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国彩票开奖与中奖数据</title>
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --panel:#ffffff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --line:#e6eaf2;
+    --brand:#1d4ed8;
+    --brand-soft:#e8efff;
+    --cyan:#0ea5e9;
+    --orange:#f97316;
+    --green:#16a34a;
+    --red:#dc2626;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px -12px rgba(15,23,42,.16);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    font-size:14px;line-height:1.55;
+  }
+  header.site{
+    background:linear-gradient(120deg,#0b1b3a 0%,#122a5c 45%,#123f78 100%);
+    color:#fff;padding:26px 32px 22px;position:relative;overflow:hidden;
+  }
+  header.site::after{
+    content:"";position:absolute;right:-60px;top:-90px;width:320px;height:320px;
+    background:radial-gradient(circle,rgba(14,165,233,.38),transparent 65%);border-radius:50%;
+  }
+  .head-inner{max-width:1440px;margin:0 auto;position:relative}
+  h1{margin:0;font-size:24px;letter-spacing:.5px;font-weight:700}
+  .sub{margin-top:6px;color:#b9cbe6;font-size:13px}
+  .badges{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{
+    font-size:12px;padding:3px 10px;border-radius:999px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#dbe7f7;
+  }
+  .wrap{max-width:1440px;margin:0 auto;padding:20px 32px 56px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{
+    border:1px solid var(--line);background:var(--panel);color:#334155;
+    padding:8px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;
+    transition:.15s;box-shadow:var(--shadow);
+  }
+  .tab:hover{border-color:#c7d4ea;color:var(--brand)}
+  .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:var(--shadow);
+  }
+  .card .k{font-size:12px;color:var(--muted);letter-spacing:.4px}
+  .card .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+  .card .v small{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px}
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;
+  }
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;
+  }
+  .panel-head h2{margin:0;font-size:15px;font-weight:700}
+  .panel-head .hint{font-size:12px;color:var(--muted)}
+  .panel-body{padding:16px 18px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-size:11px;color:var(--muted);letter-spacing:.4px}
+  select,input[type=text],input[type=date]{
+    border:1px solid var(--line);background:#fff;border-radius:9px;
+    padding:7px 10px;font-size:13px;color:var(--ink);min-width:130px;outline:none;
+    font-family:inherit;
+  }
+  select:focus,input:focus{border-color:#93b4f0;box-shadow:0 0 0 3px rgba(29,78,216,.10)}
+  .btn{
+    border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px;
+    font-size:13px;cursor:pointer;color:#334155;font-family:inherit;
+  }
+  .btn:hover{border-color:#c7d4ea;color:var(--brand)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .table-wrap{overflow:auto;max-height:64vh;border-top:1px solid var(--line)}
+  table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  thead th{
+    position:sticky;top:0;z-index:2;background:#f8fafc;text-align:left;
+    font-weight:600;color:#475569;font-size:12px;letter-spacing:.3px;
+    padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid #f1f4f9;white-space:nowrap;color:#1e293b}
+  tbody tr:nth-child(even){background:#fbfcfe}
+  tbody tr:hover{background:#f2f7ff}
+  td.num{text-align:right}
+  .tag{
+    display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;
+    background:var(--brand-soft);color:var(--brand);
+  }
+  .tag.h{background:#e7f7ee;color:#15803d}
+  .tag.d{background:#fff4e6;color:#b45309}
+  .tag.a{background:#fdeaea;color:#b91c1c}
+  .pager{
+    display:flex;align-items:center;gap:10px;justify-content:space-between;
+    padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap;
+    font-size:13px;color:var(--muted);
+  }
+  .pager .grp{display:flex;align-items:center;gap:8px}
+  .bars{display:flex;flex-direction:column;gap:10px}
+  .bar-row{display:grid;grid-template-columns:96px 1fr 110px;gap:12px;align-items:center;font-size:13px}
+  .bar-track{background:#eef2f9;border-radius:999px;height:16px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#3b82f6,#0ea5e9)}
+  .bar-val{text-align:right;color:#334155;font-variant-numeric:tabular-nums}
+  .chart-box{padding:12px 10px 4px}
+  canvas{display:block;width:100%}
+  .empty{padding:48px;text-align:center;color:var(--muted)}
+  .err{
+    margin:16px 0;padding:14px 16px;border-radius:12px;background:#fff7ed;
+    border:1px solid #fed7aa;color:#9a3412;font-size:13px;line-height:1.7;
+  }
+  .err code{background:#fff;padding:1px 6px;border-radius:5px;border:1px solid #fed7aa}
+  .loading{padding:40px;text-align:center;color:var(--muted)}
+  .spinner{
+    width:22px;height:22px;border:2px solid #dbe4f3;border-top-color:var(--brand);
+    border-radius:50%;margin:0 auto 10px;animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .muted{color:var(--muted)}
+  .mono{font-family:"Cascadia Mono",Consolas,monospace;font-size:12.5px}
+  footer{max-width:1440px;margin:0 auto;padding:0 32px 40px;color:#94a3b8;font-size:12px}
+  /* ---- 统计分析 ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:16px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+  .stat .k{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .stat .v{font-size:21px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+  .stat .d{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.55}
+  .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:#eef2f9;color:#475569;font-weight:600;white-space:nowrap}
+  .pill.ok{background:#e7f7ee;color:#15803d}
+  .pill.warn{background:#fff4e6;color:#b45309}
+  .pill.bad{background:#fdeaea;color:#b91c1c}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .forecast td:first-child{color:var(--muted)}
+  .forecast td:nth-child(2){font-weight:600;font-variant-numeric:tabular-nums}
+  .ball{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 4px;
+    border-radius:50%;background:#eef4ff;color:#1d4ed8;font-size:12px;font-weight:700;margin:2px 4px 2px 0}
+  .ball.blue{background:#fdeaea;color:#b91c1c}
+  .notice{margin:0 0 16px;padding:12px 16px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);
+    color:#475569;font-size:12.5px;line-height:1.7}
+  /* ---- 预测下期 ---- */
+  .pick-row{display:flex;flex-wrap:wrap;gap:10px}
+  .pick{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:42px}
+  .pick .ball{margin:0;min-width:34px;height:34px;font-size:13px}
+  .pick small{font-size:10px;color:var(--muted);white-space:nowrap}
+  .pick.hot .ball{background:#e7f7ee;color:#15803d}
+  .pick.cold .ball{background:#f1f5f9;color:#64748b}
+  .pick.kill .ball{background:#fdeaea;color:#b91c1c}
+  .section-title{font-size:12px;color:var(--muted);margin:14px 0 8px;letter-spacing:.3px}
+  .section-title:first-child{margin-top:0}
+  .pr-sub{font-size:11px;color:#94a3b8;margin-left:6px}
+  .pos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .pos-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfcfe}
+  .pos-card .t{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .mdl-hi{background:#f0fdf4}
+  .mdl-note{font-size:12px;color:var(--muted);line-height:1.75;margin-top:10px}
+  .mdl-w{font-size:12px;color:#475569;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;line-height:1.75;margin-bottom:12px}
+  /* ---- 预测盈亏 ---- */
+  .pnl-pos{color:#15803d;font-weight:700}
+  .pnl-neg{color:#b91c1c;font-weight:700}
+  .pnl-curve{width:100%;height:auto;display:block}
+  .pnl-legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12px;color:#475569;margin-top:10px}
+  .pnl-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  @media(max-width:720px){
+    header.site{padding:20px}
+    .wrap{padding:16px}
+    .bar-row{grid-template-columns:72px 1fr 90px}
+  }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="head-inner">
+    <h1>中国彩票开奖与中奖数据平台</h1>
+    <div class="sub">数据来源：中国福利彩票官网 cwl.gov.cn · 中国体育彩票官网 lottery.gov.cn（含体彩官方数据接口 sporttery.cn）</div>
+    <div class="badges">
+      <span class="badge">双色球</span><span class="badge">快乐8</span><span class="badge">福彩3D</span>
+      <span class="badge">七乐彩</span><span class="badge">超级大乐透</span><span class="badge">七星彩</span>
+      <span class="badge">竞彩足球</span><span class="badge">竞彩篮球</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</div>
+<footer>数据仅作统计研究用途；开奖与中奖信息以官方公告为准。</footer>
+
+<script>
+/* ------------------------------------------------------------------ 工具 */
+const nf = new Intl.NumberFormat('zh-CN');
+const COLORS = {
+  ssq:'#e11d48', kl8:'#7c3aed', '3d':'#0ea5e9', qlc:'#f59e0b',
+  dlt:'#dc2626', qxc:'#0d9488', fb:'#2563eb', bb:'#ea580c'
+};
+
+function fmtInt(v){
+  if(v === '' || v == null) return '—';
+  const n = Number(v);
+  return isFinite(n) ? nf.format(n) : v;
+}
+function fmtYi(v){
+  if(v === '' || v == null) return '—';
+  const n = Number(v);
+  if(!isFinite(n)) return '—';
+  return (n / 1e8).toLocaleString('zh-CN',{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtOdds(v){
+  if(v === '' || v == null) return '—';
+  const n = Number(v);
+  return isFinite(n) ? n.toFixed(2) : v;
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+function parseCSV(text){
+  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let row = [], field = '', inQ = false, i = 0;
+  for(; i < text.length; i++){
+    const c = text[i];
+    if(inQ){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; } else inQ = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQ = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\n'){ row.push(field); field = ''; rows.push(row); row = []; }
+      else if(c === '\r'){ /* skip */ }
+      else field += c;
+    }
+  }
+  if(field !== '' || row.length){ row.push(field); rows.push(row); }
+  const head = rows.shift() || [];
+  return rows.filter(r => r.length > 1 || (r[0] || '') !== '').map(r => {
+    const o = {};
+    head.forEach((h, j) => o[h] = r[j] === undefined ? '' : r[j]);
+    return o;
+  });
+}
+
+/* ------------------------------------------------------------------ 数据注册 */
+const DATASETS = {
+  draws:      { file:'data/draws.csv',      cache:null, rows:0 },
+  prizes:     { file:'data/prizes.csv',     cache:null, rows:0 },
+  regions:    { file:'data/regions.csv',    cache:null, rows:0 },
+  fb:         { file:'data/jingcai_football.csv',   cache:null, rows:0 },
+  bb:         { file:'data/jingcai_basketball.csv', cache:null, rows:0 },
+  analysis:   { file:'data/analysis.json', cache:null, rows:0 },
+  predictions:{ file:'data/predictions.json', cache:null, rows:0 },
+  pnl:        { file:'data/pnl.json',        cache:null, rows:0 }
+};
+
+async function load(name){
+  const ds = DATASETS[name];
+  if(ds.cache) return ds.cache;
+  const res = await fetch(ds.file, {cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  const text = await res.text();
+  ds.cache = parseCSV(text);
+  ds.rows = ds.cache.length;
+  return ds.cache;
+}
+
+async function loadJSON(name){
+  const ds = DATASETS[name];
+  if(ds.cache) return ds.cache;
+  const res = await fetch(ds.file, {cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  ds.cache = await res.json();
+  return ds.cache;
+}
+
+/* ------------------------------------------------------------------ 视图定义 */
+const VIEWS = {
+  overview: { label:'总览', kind:'overview' },
+  stats:    { label:'统计分析', kind:'stats' },
+  predict:  { label:'预测下期', kind:'predict' },
+  pnl:      { label:'预测盈亏', kind:'pnl' },
+
+  draws: {
+    label:'开奖数据', kind:'table', dataset:'draws',
+    title:'开奖记录（全部彩种）',
+    hint:'号码、销售额、奖池余额',
+    hasLottery:true, hasDate:true,
+    searchKeys:['issue','front_numbers','back_numbers','lottery_name'],
+    columns:[
+      {label:'彩种', render:r => `<span class="tag">${esc(r.lottery_name)}</span>`},
+      {label:'期号', render:r => `<span class="mono">${esc(r.issue)}</span>`},
+      {label:'开奖日期', render:r => esc(r.draw_date)},
+      {label:'开奖号码', render:r => `<span class="mono">${esc(r.front_numbers)}${r.back_numbers ? ' + ' + esc(r.back_numbers) : ''}</span>`},
+      {label:'销售额(元)', cls:'num', render:r => fmtInt(r.sales_amount)},
+      {label:'开奖后奖池(元)', cls:'num', render:r => fmtInt(r.pool_after_draw)},
+      {label:'派奖/追加(元)', cls:'num', render:r => fmtInt(r.extra_amount)}
+    ]
+  },
+
+  prizes: {
+    label:'中奖明细', kind:'table', dataset:'prizes',
+    title:'奖级中奖明细（注数 / 单注奖金 / 奖金合计）',
+    hint:'含 172,497 条奖级记录',
+    hasLottery:true, hasDate:true,
+    searchKeys:['issue','prize_level','lottery_name'],
+    columns:[
+      {label:'彩种', render:r => `<span class="tag">${esc(r.lottery_name)}</span>`},
+      {label:'期号', render:r => `<span class="mono">${esc(r.issue)}</span>`},
+      {label:'开奖日期', render:r => esc(r.draw_date)},
+      {label:'奖级', render:r => esc(r.prize_level)},
+      {label:'中奖注数', cls:'num', render:r => r.winner_count === '' ? '—' : fmtInt(r.winner_count)},
+      {label:'单注奖金(元)', cls:'num', render:r => fmtInt(r.unit_prize)},
+      {label:'奖金合计(元)', cls:'num', render:r => fmtInt(r.total_prize)},
+      {label:'备注', render:r => `<span class="muted">${esc(r.note)}</span>`}
+    ]
+  },
+
+  regions: {
+    label:'地域分布', kind:'table', dataset:'regions',
+    title:'一等奖地域分布（官方原文解析）',
+    hint:'仅福彩双色球 / 快乐8选十中十 / 七乐彩一等奖公布省份',
+    hasLottery:true, hasDate:true,
+    searchKeys:['issue','region','raw_text','prize_level'],
+    columns:[
+      {label:'彩种', render:r => `<span class="tag">${esc(r.lottery_name)}</span>`},
+      {label:'期号', render:r => `<span class="mono">${esc(r.issue)}</span>`},
+      {label:'开奖日期', render:r => esc(r.draw_date)},
+      {label:'奖级', render:r => esc(r.prize_level)},
+      {label:'地区', render:r => `<b>${esc(r.region)}</b>`},
+      {label:'中奖注数', cls:'num', render:r => fmtInt(r.winner_count)},
+      {label:'官方原文', render:r => `<span class="muted" title="${esc(r.raw_text)}">${esc(String(r.raw_text||'').slice(0,40))}</span>`}
+    ]
+  },
+
+  fb: {
+    label:'竞彩足球', kind:'table', dataset:'fb',
+    title:'竞彩足球赛果与固定奖金',
+    hint:'胜平负赔率、让球数、半场/全场比分',
+    hasLottery:false, hasDate:true,
+    searchKeys:['match_num','league','home_team','away_team'],
+    columns:[
+      {label:'场次', render:r => `<span class="mono">${esc(r.match_num)}</span>`},
+      {label:'比赛日期', render:r => esc(r.match_date)},
+      {label:'联赛', render:r => esc(r.league)},
+      {label:'主队', render:r => esc(r.home_team)},
+      {label:'客队', render:r => esc(r.away_team)},
+      {label:'比分', render:r => `<span class="mono">${esc(r.score)}</span>`},
+      {label:'半场', render:r => `<span class="mono">${esc(r.half_score)}</span>`},
+      {label:'结果', render:r => resultTag(r.result)},
+      {label:'主胜', cls:'num', render:r => fmtOdds(r.odds_home)},
+      {label:'平', cls:'num', render:r => fmtOdds(r.odds_draw)},
+      {label:'客胜', cls:'num', render:r => fmtOdds(r.odds_away)},
+      {label:'让球', render:r => esc(r.handicap)},
+      {label:'状态', render:r => statusText(r.match_status)}
+    ]
+  },
+
+  bb: {
+    label:'竞彩篮球', kind:'table', dataset:'bb',
+    title:'竞彩篮球赛果与固定奖金',
+    hint:'胜负/让分胜负赔率、半场比分',
+    hasLottery:false, hasDate:true,
+    searchKeys:['match_num','league','home_team','away_team'],
+    columns:[
+      {label:'场次', render:r => `<span class="mono">${esc(r.match_num)}</span>`},
+      {label:'比赛日期', render:r => esc(r.match_date)},
+      {label:'联赛', render:r => esc(r.league)},
+      {label:'主队', render:r => esc(r.home_team)},
+      {label:'客队', render:r => esc(r.away_team)},
+      {label:'比分', render:r => `<span class="mono">${esc(r.score)}</span>`},
+      {label:'半场', render:r => `<span class="mono">${esc(r.half_score)}</span>`},
+      {label:'结果', render:r => resultTag(r.result)},
+      {label:'主胜', cls:'num', render:r => fmtOdds(r.odds_home)},
+      {label:'客胜', cls:'num', render:r => fmtOdds(r.odds_away)},
+      {label:'让分', render:r => esc(r.handicap)},
+      {label:'状态', render:r => statusText(r.match_status)}
+    ]
+  }
+};
+
+function resultTag(v){
+  if(v === 'H') return '<span class="tag h">主胜</span>';
+  if(v === 'D') return '<span class="tag d">平</span>';
+  if(v === 'A') return '<span class="tag a">客胜</span>';
+  return esc(v || '—');
+}
+function statusText(v){
+  const map = {'2':'已完场','1':'进行中','0':'未开赛'};
+  return `<span class="muted">${map[String(v)] || esc(v || '—')}</span>`;
+}
+
+/* ------------------------------------------------------------------ 状态 */
+const state = {
+  tab:'overview',
+  views:{},
+  lotters:[]        // [{code,name}]
+};
+function vstate(key){
+  if(!state.views[key]) state.views[key] = {page:1, size:50, lottery:'', from:'', to:'', kw:'', rows:[], filtered:[], ready:false};
+  return state.views[key];
+}
+
+/* ------------------------------------------------------------------ 标签页 */
+function renderTabs(){
+  const el = document.getElementById('tabs');
+  el.innerHTML = Object.entries(VIEWS).map(([k,v]) =>
+    `<button class="tab${state.tab===k?' active':''}" data-tab="${k}">${v.label}</button>`).join('');
+  el.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+    state.tab = b.dataset.tab;
+    renderTabs();
+    renderView();
+  });
+}
+
+/* ------------------------------------------------------------------ 视图路由 */
+async function renderView(){
+  const el = document.getElementById('view');
+  const view = VIEWS[state.tab];
+  if(view.kind === 'overview'){ await renderOverview(el); return; }
+  if(view.kind === 'stats'){ await renderStats(el); return; }
+  if(view.kind === 'predict'){ await renderPredict(el); return; }
+  if(view.kind === 'pnl'){ await renderPnl(el); return; }
+
+  const st = vstate(state.tab);
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>${view.title}</h2>
+          <div class="hint">${view.hint}</div>
+        </div>
+        <div class="hint" id="sum-${state.tab}"></div>
+      </div>
+      <div class="panel-body">
+        <div class="filters" id="filters-${state.tab}">
+          ${view.hasLottery ? `
+          <div class="field"><label>彩种</label>
+            <select id="f-lottery"><option value="">全部彩种</option></select>
+          </div>` : ''}
+          ${view.hasDate ? `
+          <div class="field"><label>开始日期</label><input type="date" id="f-from"></div>
+          <div class="field"><label>结束日期</label><input type="date" id="f-to"></div>` : ''}
+          <div class="field"><label>关键词</label>
+            <input type="text" id="f-kw" placeholder="期号 / 号码 / 球队 / 地区" style="min-width:220px">
+          </div>
+          <button class="btn" id="f-reset">重置</button>
+        </div>
+      </div>
+      <div id="body-${state.tab}"><div class="loading"><div class="spinner"></div>正在加载 ${view.dataset.toUpperCase()} 数据…</div></div>
+    </div>`;
+
+  // 绑定筛选
+  if(view.hasLottery){
+    const sel = document.getElementById('f-lottery');
+    sel.innerHTML = '<option value="">全部彩种</option>' +
+      state.lotters.map(l => `<option value="${l.code}">${l.name}</option>`).join('');
+    sel.value = st.lottery;
+    sel.onchange = () => { st.lottery = sel.value; st.page = 1; apply(); };
+  }
+  if(view.hasDate){
+    const f = document.getElementById('f-from'), t = document.getElementById('f-to');
+    f.value = st.from; t.value = st.to;
+    f.onchange = () => { st.from = f.value; st.page = 1; apply(); };
+    t.onchange = () => { st.to = t.value; st.page = 1; apply(); };
+  }
+  const kw = document.getElementById('f-kw');
+  kw.value = st.kw;
+  let timer = null;
+  kw.oninput = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { st.kw = kw.value.trim(); st.page = 1; apply(); }, 220);
+  };
+  document.getElementById('f-reset').onclick = () => {
+    st.lottery = ''; st.from = ''; st.to = ''; st.kw = ''; st.page = 1;
+    renderView();
+  };
+
+  try{
+    if(!st.ready){
+      st.rows = await load(view.dataset);
+      st.ready = true;
+    }
+    apply();
+  }catch(e){
+    document.getElementById('body-' + state.tab).innerHTML =
+      errBox(e, DATASETS[view.dataset].file);
+  }
+}
+
+function errBox(e, file){
+  return `<div class="panel-body"><div class="err">
+    <b>数据加载失败：</b>${esc(e.message)}（${esc(file)}）<br>
+    浏览器对 <code>file://</code> 下的 fetch 有安全限制，请在本目录启动静态服务后访问：<br>
+    <code>python -m http.server 8000</code> → 打开 <code>http://localhost:8000/</code>
+  </div></div>`;
+}
+
+/* ------------------------------------------------------------------ 筛选 + 表格 */
+function apply(){
+  const key = state.tab, view = VIEWS[key], st = vstate(key);
+  const from = st.from, to = st.to, lott = st.lottery, kw = st.kw.toLowerCase();
+
+  st.filtered = st.rows.filter(r => {
+    if(lott && r.lottery_code !== lott) return false;
+    const d = r.draw_date || r.match_date || '';
+    if(from && d && d < from) return false;
+    if(to && d && d > to) return false;
+    if(kw){
+      const hit = view.searchKeys.some(k => String(r[k] || '').toLowerCase().includes(kw));
+      if(!hit) return false;
+    }
+    return true;
+  });
+
+  // 汇总提示
+  const sum = document.getElementById('sum-' + key);
+  if(sum){
+    let extra = '';
+    if(key === 'prizes'){
+      const s = st.filtered.reduce((a, r) => a + (Number(r.total_prize) || 0), 0);
+      extra = ` · 奖金合计 ${fmtYi(s)} 亿元`;
+    }
+    if(key === 'draws'){
+      const s = st.filtered.reduce((a, r) => a + (Number(r.sales_amount) || 0), 0);
+      extra = ` · 销售额合计 ${fmtYi(s)} 亿元`;
+    }
+    sum.textContent = `筛选结果 ${nf.format(st.filtered.length)} 条` + extra;
+  }
+
+  renderTable();
+}
+
+function renderTable(){
+  const key = state.tab, view = VIEWS[key], st = vstate(key);
+  const total = st.filtered.length;
+  const pages = Math.max(1, Math.ceil(total / st.size));
+  if(st.page > pages) st.page = pages;
+  const start = (st.page - 1) * st.size;
+  const slice = st.filtered.slice(start, start + st.size);
+
+  const thead = `<tr>${view.columns.map(c => `<th class="${c.cls || ''}">${c.label}</th>`).join('')}</tr>`;
+  const tbody = slice.length ? slice.map(r =>
+    `<tr>${view.columns.map(c => `<td class="${c.cls || ''}">${c.render(r)}</td>`).join('')}</tr>`
+  ).join('') : `<tr><td colspan="${view.columns.length}"><div class="empty">没有符合条件的数据</div></td></tr>`;
+
+  document.getElementById('body-' + key).innerHTML = `
+    <div class="table-wrap">
+      <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+    </div>
+    <div class="pager">
+      <div class="grp">
+        <button class="btn" id="pg-first" ${st.page<=1?'disabled':''}>« 首页</button>
+        <button class="btn" id="pg-prev" ${st.page<=1?'disabled':''}>‹ 上一页</button>
+        <span>第 <b>${st.page}</b> / ${pages} 页 · 共 ${nf.format(total)} 条</span>
+        <button class="btn" id="pg-next" ${st.page>=pages?'disabled':''}>下一页 ›</button>
+        <button class="btn" id="pg-last" ${st.page>=pages?'disabled':''}>末页 »</button>
+      </div>
+      <div class="grp">
+        <label>每页</label>
+        <select id="pg-size">
+          ${[50,100,200,500].map(n => `<option value="${n}"${n===st.size?' selected':''}>${n}</option>`).join('')}
+        </select>
+      </div>
+    </div>`;
+
+  const setPage = p => { st.page = p; renderTable(); };
+  document.getElementById('pg-first').onclick = () => setPage(1);
+  document.getElementById('pg-prev').onclick  = () => setPage(st.page - 1);
+  document.getElementById('pg-next').onclick  = () => setPage(st.page + 1);
+  document.getElementById('pg-last').onclick  = () => setPage(pages);
+  document.getElementById('pg-size').onchange = e => { st.size = +e.target.value; st.page = 1; renderTable(); };
+}
+
+/* ------------------------------------------------------------------ 总览 */
+let chartCfg = null;
+
+async function renderOverview(el){
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载开奖数据…</div>';
+  let draws;
+  try{
+    draws = await load('draws');
+  }catch(e){
+    el.innerHTML = errBox(e, 'data/draws.csv');
+    return;
+  }
+
+  // 汇总
+  const byLot = new Map();
+  for(const r of draws){
+    const k = r.lottery_code;
+    if(!byLot.has(k)) byLot.set(k, {
+      code:k, name:r.lottery_name, n:0, min:r.draw_date, max:r.draw_date, sales:0
+    });
+    const o = byLot.get(k);
+    o.n++;
+    if(r.draw_date){ if(!o.min || r.draw_date < o.min) o.min = r.draw_date; if(!o.max || r.draw_date > o.max) o.max = r.draw_date; }
+    o.sales += Number(r.sales_amount) || 0;
+  }
+  const lots = [...byLot.values()].sort((a,b) => b.n - a.n);
+  const totalSales = lots.reduce((a, o) => a + o.sales, 0);
+  const maxDate = lots.reduce((a, o) => (o.max > a ? o.max : a), '');
+  const minDate = lots.reduce((a, o) => (!a || (o.min && o.min < a) ? o.min : a), '');
+
+  el.innerHTML = `
+    <div class="cards">
+      <div class="card"><div class="k">开奖总期数</div><div class="v">${nf.format(draws.length)}<small>期</small></div></div>
+      <div class="card"><div class="k">覆盖乐透彩种</div><div class="v">${lots.length}<small>个</small></div></div>
+      <div class="card"><div class="k">数据起止</div><div class="v" style="font-size:16px">${minDate} ~ ${maxDate}</div></div>
+      <div class="card"><div class="k">累计销售额</div><div class="v">${fmtYi(totalSales)}<small>亿元</small></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>各彩种期数分布</h2><span class="hint">点击彩种可切换下方销售额走势</span></div>
+      <div class="panel-body"><div class="bars" id="lot-bars"></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>销售额走势（月度，亿元）</h2>
+        <select id="chart-lot"></select>
+      </div>
+      <div class="chart-box"><canvas id="sales-chart" height="300"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>各彩种覆盖明细</h2><span class="hint">数据按官方接口可得范围抓取</span></div>
+      <div class="table-wrap" style="max-height:none">
+        <table>
+          <thead><tr><th>彩种</th><th>期数</th><th>起始日期</th><th>结束日期</th><th class="num">累计销售额(元)</th><th class="num">平均单期销售额(元)</th></tr></thead>
+          <tbody>${lots.map(o => `
+            <tr>
+              <td><span class="tag">${esc(o.name)}</span></td>
+              <td class="num">${nf.format(o.n)}</td>
+              <td>${esc(o.min)}</td>
+              <td>${esc(o.max)}</td>
+              <td class="num">${o.sales ? fmtInt(Math.round(o.sales)) : '—'}</td>
+              <td class="num">${o.sales ? fmtInt(Math.round(o.sales / o.n)) : '—'}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  // 条形图
+  const maxN = Math.max(...lots.map(o => o.n));
+  document.getElementById('lot-bars').innerHTML = lots.map(o => `
+    <div class="bar-row" data-code="${o.code}" style="cursor:pointer">
+      <div>${esc(o.name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(o.n / maxN * 100).toFixed(1)}%;background:linear-gradient(90deg,${COLORS[o.code]||'#3b82f6'},#93c5fd)"></div></div>
+      <div class="bar-val">${nf.format(o.n)} 期</div>
+    </div>`).join('');
+  document.querySelectorAll('#lot-bars .bar-row').forEach(row => {
+    row.onclick = () => {
+      document.getElementById('chart-lot').value = row.dataset.code;
+      drawSalesChart(draws, row.dataset.code);
+    };
+  });
+
+  // 折线图
+  const sel = document.getElementById('chart-lot');
+  sel.innerHTML = lots.map(o => `<option value="${o.code}">${o.name}</option>`).join('');
+  sel.value = lots[0].code;
+  sel.onchange = () => drawSalesChart(draws, sel.value);
+  drawSalesChart(draws, lots[0].code);
+
+  window.addEventListener('resize', () => {
+    if(chartCfg) drawSalesChart(chartCfg.draws, chartCfg.code);
+  });
+}
+
+function drawSalesChart(draws, code){
+  const canvas = document.getElementById('sales-chart');
+  if(!canvas) return;
+  chartCfg = {draws, code};
+
+  const buckets = new Map();
+  for(const r of draws){
+    if(r.lottery_code !== code || !r.draw_date) continue;
+    const sale = Number(r.sales_amount);
+    if(!isFinite(sale) || sale <= 0) continue;
+    const m = r.draw_date.slice(0, 7);
+    buckets.set(m, (buckets.get(m) || 0) + sale);
+  }
+  const pts = [...buckets.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1)
+    .map(([m, v]) => ({m, v: v / 1e8}));
+
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 900, h = 300;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  if(!pts.length){
+    ctx.fillStyle = '#94a3b8'; ctx.font = '13px sans-serif';
+    ctx.fillText('该彩种无销售额数据', 20, 40);
+    return;
+  }
+
+  const pad = {l:52, r:14, t:16, b:26};
+  const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+  const maxV = Math.max(...pts.map(p => p.v));
+  const yMax = Math.ceil(maxV * 1.12);
+
+  // 网格
+  ctx.strokeStyle = '#eef2f9'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+  const ticks = 5;
+  for(let i = 0; i <= ticks; i++){
+    const y = pad.t + ih - ih * i / ticks;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillText((yMax * i / ticks).toFixed(1), pad.l - 8, y + 4);
+  }
+
+  const X = i => pad.l + (pts.length === 1 ? iw / 2 : iw * i / (pts.length - 1));
+  const Y = v => pad.t + ih - ih * (v / yMax);
+
+  // 面积
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + ih);
+  grad.addColorStop(0, 'rgba(29,78,216,.28)');
+  grad.addColorStop(1, 'rgba(29,78,216,.02)');
+  ctx.beginPath();
+  ctx.moveTo(X(0), pad.t + ih);
+  pts.forEach((p, i) => ctx.lineTo(X(i), Y(p.v)));
+  ctx.lineTo(X(pts.length - 1), pad.t + ih);
+  ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+
+  // 折线
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(X(i), Y(p.v)) : ctx.moveTo(X(i), Y(p.v)));
+  ctx.strokeStyle = COLORS[code] || '#1d4ed8';
+  ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+
+  // X 轴标签
+  ctx.textAlign = 'center'; ctx.fillStyle = '#94a3b8';
+  const step = Math.max(1, Math.ceil(pts.length / 7));
+  pts.forEach((p, i) => {
+    if(i % step === 0 || i === pts.length - 1) ctx.fillText(p.m, X(i), h - 8);
+  });
+}
+
+/* ------------------------------------------------------------------ 统计分析 */
+let statsPick = null;
+let sumChartCfg = null;
+
+const fmtP = p => (p == null ? '—' : (p < 1e-4 ? p.toExponential(2) : p.toFixed(4)));
+const pctf = v => (v == null ? '—' : (v * 100).toFixed(1) + '%');
+const pillCls = t => (/极显著/.test(t) ? 'bad' : /显著/.test(t) ? 'warn' : 'ok');
+const pad2 = n => String(n).padStart(2, '0');
+
+async function renderStats(el){
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载统计分析结果…</div>';
+  let data;
+  try{ data = await loadJSON('analysis'); }
+  catch(e){ el.innerHTML = errBox(e, 'data/analysis.json'); return; }
+
+  const lots = data.lotteries || [];
+  if(!lots.length){ el.innerHTML = '<div class="empty">暂无分析结果，请先运行 python analyze.py</div>'; return; }
+  const cur = lots.find(l => l.code === statsPick) || lots[0];
+  statsPick = cur.code;
+
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>统计分析 · 多重统计模型</h2>
+          <div class="hint">卡方均匀性检验 · 分位数中心区间 · 自相关与游程检验 · 遗漏与号码对共现</div>
+        </div>
+        <div class="field"><label>彩种</label><select id="st-lot"></select></div>
+      </div>
+      <div class="panel-body" style="padding:12px 18px"><div class="hint" id="st-meta"></div></div>
+    </div>
+    <div class="notice">${esc(data.note || '')}　分析生成时间：${esc(data.generated_at || '')}</div>
+    <div id="st-body"></div>`;
+
+  const sel = document.getElementById('st-lot');
+  sel.innerHTML = lots.map(l => `<option value="${l.code}">${esc(l.name)}（${nf.format(l.draws)} 期）</option>`).join('');
+  sel.value = cur.code;
+  sel.onchange = () => { statsPick = sel.value; paintStats(lots.find(l => l.code === statsPick)); };
+  paintStats(cur);
+}
+
+function paintStats(rec){
+  const f = rec.forecast || {};
+  const u = rec.uniformity || {};
+  const ind = rec.independence || {};
+  const runs = ind.runs;
+  const ac = ind.autocorr || [];
+  const acMax = ac.reduce((a, b) => (Math.abs(b.r) > Math.abs(a.r) ? b : a), ac[0] || {r: 0, lag: 0});
+
+  const front = (rec.last.nums || []).map(n => `<span class="ball">${rec.pool > 10 ? pad2(n) : n}</span>`).join('');
+  const back = (rec.last.sp || []).map(n => `<span class="ball blue">${pad2(n)}</span>`).join('');
+  document.getElementById('st-meta').innerHTML =
+    `${esc(rec.name)} · 样本 ${nf.format(rec.draws)} 期 · 覆盖 ${esc(rec.date_from)} ~ ${esc(rec.date_to)}<br>
+     最近一期 <b>${esc(rec.last.issue)}</b>（${esc(rec.last.date)}） ${front}${back}
+     ${rec.window ? `<br><span class="pr-sub">建模窗口：${esc(rec.window.start)} 起 —— ${esc(rec.window.reason)}</span>` : ''}`;
+
+  /* ---- 检验结论卡片 ---- */
+  const ksOk = rec.sum && rec.sum.ks_p != null && rec.sum.ks_p >= 0.05;
+  const cards = `
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="k">号码均匀性（卡方拟合优度）<span class="pill ${pillCls(u.verdict || '')}">${esc(u.verdict || '—')}</span></div>
+        <div class="v">χ² = ${u.chi2} <small style="font-size:12px;color:var(--muted)">df=${u.df}</small></div>
+        <div class="d">p 值 ${fmtP(u.p)} · 若 p≥0.05 表示与“各号码等概率”无显著差异</div>
+      </div>
+      <div class="stat">
+        <div class="k">序列独立性（游程检验）<span class="pill ${pillCls(runs ? runs.verdict : '')}">${runs ? esc(runs.verdict) : '样本不足'}</span></div>
+        <div class="v">z = ${runs ? runs.z : '—'}</div>
+        <div class="d">游程 ${runs ? runs.runs : '—'} 个 / 期望 ${runs ? runs.expect : '—'} · p ${runs ? fmtP(runs.p) : '—'}<br>和值自相关最大 lag${acMax.lag}：r = ${acMax.r}（p ${fmtP(acMax.p)}）</div>
+      </div>
+      <div class="stat">
+        <div class="k">和值分布形态<span class="pill ${ksOk ? 'ok' : 'warn'}">${ksOk ? '近似正态' : '偏离正态'}</span></div>
+        <div class="v">${rec.sum.mean} ± ${rec.sum.std}</div>
+        <div class="d">K-S 检验 p = ${fmtP(rec.sum.ks_p)} · 中位数 ${rec.sum.median} · 偏度 ${rec.sum.skew == null ? '—' : rec.sum.skew}</div>
+      </div>
+      <div class="stat">
+        <div class="k">单注最高奖概率 <span class="pill">组合数 ${nf.format(f.combinations)}</span></div>
+        <div class="v" style="font-size:18px">${esc(f.odds || '—')}</div>
+        <div class="d">与上期重号均值 ${f.repeat_mean}（独立随机理论 ${f.repeat_expect}）· 连号出现率 ${pctf(f.consec_rate)}</div>
+      </div>
+    </div>`;
+
+  /* ---- 下期高概率区间与范围 ---- */
+  const rows = [];
+  if(f.sum80) rows.push(['和值主区间（80% 覆盖）', `${f.sum80[0]} ~ ${f.sum80[1]}`, '历史期数落在该区间的比例约 80%（P10–P90）']);
+  if(f.sum90) rows.push(['和值扩展区间（90% 覆盖）', `${f.sum90[0]} ~ ${f.sum90[1]}`, 'P5–P95，覆盖约 90% 的历史期数']);
+  if(f.span80) rows.push(['跨度区间（80% 覆盖）', `${f.span80[0]} ~ ${f.span80[1]}`, '跨度 = 最大号码 − 最小号码']);
+  rows.push(['与上期重号个数', `${f.repeat_mode} 个`, `历史最常见值，均值 ${f.repeat_mean}，独立随机理论值 ${f.repeat_expect}`]);
+  if(f.odd_top) rows.push(['奇偶比（最常见）', f.odd_top.map(x => `${x.k} 奇`).join(' / '), '占比 ' + f.odd_top.map(x => pctf(x.share)).join(' / ')]);
+  if(f.big_top) rows.push(['大小比（最常见）', f.big_top.map(x => `${x.k} 大`).join(' / '), '大号指大于号码池一半的值，占比 ' + f.big_top.map(x => pctf(x.share)).join(' / ')]);
+  if(f.consec_rate != null) rows.push(['出现连号的概率', pctf(f.consec_rate), '至少出现一组相邻号码的期数占比']);
+  if(f.zone) rows.push(['最热号码分区', f.zone, `该分区历史占比 ${pctf(f.zone_share)}（三等分理论值 33.3%）`]);
+  if(f.positions) rows.push(['按位高频数字', f.positions.map(p => `第${p.pos}位 ${p.top}（${pctf(p.share)}）`).join(' · '), '各位置历史上出现最多的数字']);
+  rows.push(['单注最高奖概率', f.odds, `全部组合数 ${nf.format(f.combinations)}`]);
+
+  const forecast = `
+    <div class="panel">
+      <div class="panel-head"><h2>下期高概率区间与范围</h2><span class="hint">基于历史经验分布的分位数与最频值</span></div>
+      <div class="table-wrap" style="max-height:none">
+        <table class="forecast">
+          <thead><tr><th>维度</th><th>区间 / 取值</th><th>说明</th></tr></thead>
+          <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="muted">${r[2]}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  /* ---- 和值分布图 ---- */
+  const chart = `
+    <div class="panel">
+      <div class="panel-head"><h2>和值分布与中心区间</h2><span class="hint">柱=历史频数，浅蓝区=80% 覆盖区间，红线=正态拟合</span></div>
+      <div class="chart-box"><canvas id="st-sum-chart" height="260"></canvas></div>
+    </div>`;
+
+  /* ---- 分区热度 ---- */
+  let zones = '';
+  if(rec.zones && rec.zones.length){
+    const zmax = Math.max(...rec.zones.map(z => z.share));
+    zones = `
+      <div class="panel">
+        <div class="panel-head"><h2>分区热度</h2><span class="hint">号码池三等分后各区出号占比</span></div>
+        <div class="panel-body"><div class="bars">
+          ${rec.zones.map(z => `
+            <div class="bar-row">
+              <div>${esc(z.zone)}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(z.share / zmax * 100).toFixed(1)}%"></div></div>
+              <div class="bar-val">${pctf(z.share)}</div>
+            </div>`).join('')}
+        </div></div>
+      </div>`;
+  }
+
+  /* ---- 冷热号 + 遗漏 ---- */
+  let hotcold = '';
+  const hot = rec.hot || [], cold = rec.cold || [];
+  if(hot.length && cold.length){
+    hotcold = `
+      <div class="panel">
+        <div class="panel-head"><h2>热号 / 冷号</h2><span class="hint">z 为标准分，|z|&gt;2 视为明显偏离</span></div>
+        <div class="table-wrap" style="max-height:none">
+          <table>
+            <thead><tr><th>热号</th><th class="num">次数</th><th class="num">z</th><th>冷号</th><th class="num">次数</th><th class="num">z</th></tr></thead>
+            <tbody>${hot.map((h, i) => {
+              const c = cold[i] || {};
+              return `<tr>
+                <td><span class="ball">${pad2(h.n)}</span></td><td class="num">${nf.format(h.cnt)}</td><td class="num">${h.z}</td>
+                <td><span class="ball" style="background:#f1f5f9;color:#475569">${c.n == null ? '—' : pad2(c.n)}</span></td>
+                <td class="num">${c.cnt == null ? '—' : nf.format(c.cnt)}</td><td class="num">${c.z == null ? '—' : c.z}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  const omission = rec.omission && rec.omission.length ? `
+    <div class="panel">
+      <div class="panel-head"><h2>遗漏值（当前未出期数）</h2><span class="hint">遗漏最大的号码</span></div>
+      <div class="table-wrap" style="max-height:none">
+        <table>
+          <thead><tr><th>号码</th><th class="num">当前遗漏</th><th class="num">平均间隔</th><th class="num">最大遗漏</th><th class="num">出现次数</th></tr></thead>
+          <tbody>${rec.omission.map(o => `<tr>
+            <td>${pad2(o.n)}</td><td class="num">${o.cur}</td>
+            <td class="num">${o.avg == null ? '—' : o.avg}</td><td class="num">${o.max}</td>
+            <td class="num">${nf.format(o.cnt)}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : '';
+
+  /* ---- 独立性明细 ---- */
+  const indep = `
+    <div class="panel">
+      <div class="panel-head"><h2>独立性检验明细</h2><span class="hint">和值序列的自相关与游程</span></div>
+      <div class="table-wrap" style="max-height:none">
+        <table>
+          <thead><tr><th>滞后阶数</th><th class="num">相关系数 r</th><th class="num">p 值</th><th>结论</th></tr></thead>
+          <tbody>${ac.map(a => `<tr>
+            <td>lag ${a.lag}</td><td class="num">${a.r}</td><td class="num">${fmtP(a.p)}</td>
+            <td class="muted">${a.p >= 0.05 ? '无显著自相关' : '存在显著自相关'}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  /* ---- 号码对 ---- */
+  let pairs = '';
+  if(rec.pairs){
+    const p = rec.pairs;
+    pairs = `
+      <div class="panel">
+        <div class="panel-head"><h2>号码对共现</h2><span class="hint">理论期望每对 ${p.expect} 次 · 可能组合 ${p.possible} 组 · 从未同现 ${p.zero} 组</span></div>
+        <div class="table-wrap" style="max-height:none">
+          <table>
+            <thead><tr><th>高频组合</th><th class="num">次数</th><th>低频组合</th><th class="num">次数</th></tr></thead>
+            <tbody>${p.top.map((t, i) => {
+              const l = p.low[i] || {};
+              return `<tr>
+                <td><span class="mono">${pad2(t.a)}-${pad2(t.b)}</span></td><td class="num">${t.c}</td>
+                <td><span class="mono">${l.a == null ? '—' : pad2(l.a) + '-' + pad2(l.b)}</span></td>
+                <td class="num">${l.c == null ? '—' : l.c}</td></tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  /* ---- 特别号（蓝球 / 后区 / 特别号） ---- */
+  let special = '';
+  if(rec.special){
+    const s = rec.special;
+    special = `
+      <div class="panel">
+        <div class="panel-head"><h2>特别号分布（${s.pool} 选 ${s.pick}）</h2>
+          <span class="hint">χ² = ${s.chi2} · p = ${fmtP(s.p)} · ${esc(s.verdict)}</span></div>
+        <div class="panel-body">
+          <div class="grid2">
+            <div>
+              <div class="hint" style="margin-bottom:6px">偏多（热）</div>
+              <div class="bars">${s.hot.map(x => `
+                <div class="bar-row"><div>${pad2(x.n)}</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, 50 + x.z * 18).toFixed(1)}%"></div></div>
+                  <div class="bar-val">${nf.format(x.cnt)} 次 · z ${x.z}</div></div>`).join('')}</div>
+            </div>
+            <div>
+              <div class="hint" style="margin-bottom:6px">偏少（冷）</div>
+              <div class="bars">${s.cold.map(x => `
+                <div class="bar-row"><div>${pad2(x.n)}</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:${Math.max(6, 50 + x.z * 18).toFixed(1)}%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div></div>
+                  <div class="bar-val">${nf.format(x.cnt)} 次 · z ${x.z}</div></div>`).join('')}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ---- 数字彩：按位分布 ---- */
+  let digits = '';
+  if(rec.positions){
+    digits = `
+      <div class="panel">
+        <div class="panel-head"><h2>按位数字分布与检验</h2><span class="hint">每个位置单独做卡方均匀性检验</span></div>
+        <div class="table-wrap" style="max-height:none">
+          <table>
+            <thead><tr><th>位次</th><th class="num">样本</th><th class="num">χ²</th><th class="num">p</th><th>结论</th><th>最热</th><th class="num">占比</th><th>最冷</th></tr></thead>
+            <tbody>${rec.positions.map(q => `<tr>
+              <td>第 ${q.pos} 位${q.note ? '<br><span class="muted" style="font-size:11px">' + esc(q.note) + '</span>' : ''}</td>
+              <td class="num">${nf.format(q.n)}</td><td class="num">${q.chi2}</td><td class="num">${fmtP(q.p)}</td>
+              <td><span class="pill ${pillCls(q.verdict)}">${esc(q.verdict)}</span></td>
+              <td><span class="ball">${q.top}</span></td><td class="num">${pctf(q.top_share)}</td>
+              <td><span class="ball" style="background:#f1f5f9;color:#475569">${q.bottom}</span></td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>`;
+
+    const df = rec.digit_freq || [];
+    if(df.length){
+      const mx = Math.max(...df.map(d => d.cnt));
+      digits += `
+        <div class="panel">
+          <div class="panel-head"><h2>数字 0-9 总频数</h2><span class="hint">合并所有 0-9 位次的出现次数</span></div>
+          <div class="panel-body"><div class="bars">${df.map(d => `
+            <div class="bar-row"><div>数字 ${d.d}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(d.cnt / mx * 100).toFixed(1)}%"></div></div>
+              <div class="bar-val">${nf.format(d.cnt)} · z ${d.z}</div></div>`).join('')}</div></div>
+        </div>`;
+    }
+  }
+
+  let shapes = '';
+  if(rec.shapes && rec.shapes.length){
+    const mx = Math.max(...rec.shapes.map(s => s.c));
+    shapes = `
+      <div class="panel">
+        <div class="panel-head"><h2>号码形态（组选结构）</h2><span class="hint">豹子=三位相同，组三=两位相同，组六=三位全异</span></div>
+        <div class="panel-body"><div class="bars">${rec.shapes.map(s => `
+          <div class="bar-row"><div>${esc(s.k)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(s.c / mx * 100).toFixed(1)}%"></div></div>
+            <div class="bar-val">${nf.format(s.c)} 期 · ${pctf(s.share)}</div></div>`).join('')}</div></div>
+      </div>`;
+  }
+
+  document.getElementById('st-body').innerHTML =
+    cards + forecast + chart + zones + `<div class="grid2">${hotcold}${omission}</div>` +
+    `<div class="grid2">${indep}${pairs || special || ''}</div>` +
+    (pairs && special ? special : '') + digits + shapes;
+
+  drawSumChart(rec);
+}
+
+function drawSumChart(rec){
+  const canvas = document.getElementById('st-sum-chart');
+  if(!canvas) return;
+  sumChartCfg = rec;
+  const hist = (rec.sum && rec.sum.hist) || [];
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 900, h = 260;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  if(!hist.length){
+    ctx.fillStyle = '#94a3b8'; ctx.font = '13px sans-serif';
+    ctx.fillText('该彩种无和值分布数据', 20, 40);
+    return;
+  }
+
+  const x0 = hist[0].x0, x1 = hist[hist.length - 1].x1;
+  const maxC = Math.max(...hist.map(b => b.c), 1);
+  const pad = {l:48, r:14, t:14, b:26};
+  const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+  const X = v => pad.l + iw * (v - x0) / (x1 - x0);
+  const Y = c => pad.t + ih - ih * (c / (maxC * 1.12));
+
+  // 80% 区间阴影
+  if(rec.sum.int80){
+    ctx.fillStyle = 'rgba(29,78,216,.07)';
+    ctx.fillRect(X(rec.sum.int80[0]), pad.t, Math.max(1, X(rec.sum.int80[1]) - X(rec.sum.int80[0])), ih);
+  }
+
+  // 网格
+  ctx.strokeStyle = '#eef2f9'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+  for(let i = 0; i <= 4; i++){
+    const y = pad.t + ih - ih * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillText(Math.round(maxC * 1.12 * i / 4), pad.l - 8, y + 4);
+  }
+
+  // 柱
+  const bw = iw / hist.length;
+  hist.forEach(b => {
+    const x = X(b.x0), top = Y(b.c), base = pad.t + ih;
+    ctx.fillStyle = 'rgba(29,78,216,.45)';
+    ctx.fillRect(x + 0.5, top, Math.max(1, bw - 1), base - top);
+  });
+
+  // 正态曲线
+  const n = rec.draws, mu = rec.sum.mean, sd = rec.sum.std;
+  if(sd > 0){
+    const binW = (x1 - x0) / hist.length;
+    ctx.beginPath();
+    for(let px = 0; px <= iw; px++){
+      const x = x0 + (x1 - x0) * px / iw;
+      const g = n * binW * Math.exp(-0.5 * Math.pow((x - mu) / sd, 2)) / (sd * Math.sqrt(2 * Math.PI));
+      const y = Y(g);
+      px ? ctx.lineTo(pad.l + px, y) : ctx.moveTo(pad.l + px, y);
+    }
+    ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+
+  // X 轴标签
+  ctx.textAlign = 'center'; ctx.fillStyle = '#94a3b8';
+  for(let i = 0; i <= 6; i++){
+    const v = x0 + (x1 - x0) * i / 6;
+    ctx.fillText(Math.round(v), X(v), h - 8);
+  }
+}
+
+/* ------------------------------------------------------------------ 预测下期 */
+let predictPick = null;
+
+async function renderPredict(el){
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载下期预测…</div>';
+  let data;
+  try{ data = await loadJSON('predictions'); }
+  catch(e){ el.innerHTML = errBox(e, 'data/predictions.json'); return; }
+
+  const lots = data.lotteries || [];
+  if(!lots.length){ el.innerHTML = '<div class="empty">暂无预测结果，请先运行 python predict.py</div>'; return; }
+  const cur = lots.find(l => l.code === predictPick) || lots[0];
+  predictPick = cur.code;
+
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>预测下期 · 高胜率区间与号码推荐</h2>
+          <div class="hint">多因子打分（长期频数 · 近 50 期热度 · 遗漏回补 · 与上期共现 · Poisson–Gamma 收缩后验 · 马尔可夫条件 lift）+ 历史最频形态约束</div>
+        </div>
+        <div class="field"><label>彩种</label><select id="pr-lot"></select></div>
+      </div>
+      <div class="panel-body" style="padding:12px 18px"><div class="hint" id="pr-meta"></div></div>
+    </div>
+    <div class="notice">
+      ${esc(data.note || '')}<br>
+      <span class="muted">生成时间 ${esc(data.generated_at || '—')} · 基于 ${nf.format((data.based_on || {}).draws_csv_rows || 0)} 条开奖记录 · ${esc(data.method || '')}</span>
+    </div>
+    <div id="pr-body"></div>`;
+
+  const sel = document.getElementById('pr-lot');
+  sel.innerHTML = lots.map(l => `<option value="${l.code}">${esc(l.name)}</option>`).join('');
+  sel.value = cur.code;
+  sel.onchange = () => { predictPick = sel.value; paintPredict(lots.find(l => l.code === predictPick)); };
+  paintPredict(cur);
+}
+
+function paintPredict(rec){
+  const nx = rec.next || {};
+  const rg = rec.ranges || {};
+  const lastFront = (rec.last.nums || []).map(n => `<span class="ball">${pad2(n)}</span>`).join('');
+  const lastBack = (rec.last.sp || []).map(n => `<span class="ball blue">${pad2(n)}</span>`).join('');
+
+  const wnote = rec.window
+    ? `<br><span class="pr-sub">建模窗口：${esc(rec.window.start)} 起 —— ${esc(rec.window.reason)}；开奖数据页仍展示全量历史</span>`
+    : '';
+  document.getElementById('pr-meta').innerHTML =
+    `${esc(rec.name)} · 样本 ${nf.format(rec.draws)} 期 · 最近一期 <b>${esc(rec.last.issue)}</b>（${esc(rec.last.date)}） ${lastFront}${lastBack}
+     <br>下期预计 <b>${esc(nx.issue || '—')}</b>（${esc(nx.date || '')} ${esc(nx.weekday || '')}）${rec.play ? ' · ' + esc(rec.play) : ''}
+     <span class="pr-sub">${esc(nx.basis || '')}</span>${wnote}`;
+
+  /* ---- 区间卡片 ---- */
+  const oddTxt = (rg.odd_top || []).map(x => `${x.k} 奇`).join(' / ');
+  const bigTxt = (rg.big_top || []).map(x => `${x.k} 大`).join(' / ');
+  const cards = `
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="k">和值主区间（80% 覆盖）<span class="pill ok">核心区间</span></div>
+        <div class="v">${rg.sum80 ? rg.sum80[0] + ' ~ ' + rg.sum80[1] : '—'}</div>
+        <div class="d">扩展区间（90% 覆盖）：${rg.sum90 ? rg.sum90[0] + ' ~ ' + rg.sum90[1] : '—'}</div>
+      </div>
+      <div class="stat">
+        <div class="k">跨度区间（80% 覆盖）</div>
+        <div class="v">${rg.span80 ? rg.span80[0] + ' ~ ' + rg.span80[1] : '—'}</div>
+        <div class="d">跨度 = 最大号码 − 最小号码</div>
+      </div>
+      <div class="stat">
+        <div class="k">奇偶 / 大小 最频形态</div>
+        <div class="v" style="font-size:17px">${oddTxt || '—'}<br>${bigTxt || '—'}</div>
+        <div class="d">奇偶占比 ${(rg.odd_top || []).map(x => pctf(x.share)).join(' / ') || '—'}<br>大小占比 ${(rg.big_top || []).map(x => pctf(x.share)).join(' / ') || '—'}</div>
+      </div>
+      <div class="stat">
+        <div class="k">与上期重号 / 连号</div>
+        <div class="v">${rg.repeat_mode} 个<span class="pill" style="margin-left:8px">均值 ${rg.repeat_mean}</span></div>
+        <div class="d">${rg.consec_rate != null ? '出现连号的期数占比 ' + pctf(rg.consec_rate) : '数字彩按位独立，不统计连号'}</div>
+      </div>
+      <div class="stat">
+        <div class="k">最热号码分区</div>
+        <div class="v" style="font-size:18px">${esc(rg.zone || '—')}</div>
+        <div class="d">${rg.zone ? '该区历史占比 ' + pctf(rg.zone_share) + '（三等分理论值 33.3%）' : '按位彩种不做分区统计'}</div>
+      </div>
+      <div class="stat">
+        <div class="k">单注最高奖概率</div>
+        <div class="v" style="font-size:18px">${esc(rg.odds || '—')}</div>
+        <div class="d">每注独立随机，任何号码组合的中奖概率相同</div>
+      </div>
+    </div>`;
+
+  /* ---- 号码推荐 ---- */
+  let recPanel;
+  if(rec.digit){
+    recPanel = `
+      <div class="panel">
+        <div class="panel-head"><h2>号码推荐 · 按位打分</h2>
+          <span class="hint">每位分数 = 长期频数 z×0.28 + 近 50 期热度 z×0.26 + 遗漏回补×0.20 + Poisson–Gamma 收缩后验 z×0.14 + 马尔可夫条件 lift z×0.12</span></div>
+        <div class="panel-body">
+          <div class="pos-grid">
+            ${(rec.positions || []).map(p => `
+              <div class="pos-card">
+                <div class="t">第 ${p.pos} 位${p.note ? ' · ' + esc(p.note) : ''}</div>
+                <div class="pick-row">
+                  ${p.top.map((t, i) => `
+                    <div class="pick${i === 0 ? ' hot' : ''}">
+                      <span class="ball">${t.d}</span>
+                      <small>${i === 0 ? '首选' : (i === 1 ? '次选' : '备选')} ${t.score.toFixed(2)}</small>
+                    </div>`).join('')}
+                </div>
+                <div class="hint" style="margin-top:8px;font-size:11px">历史最热 ${p.hist_top}（占比 ${pctf(p.hist_share)}）</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const core = rec.core || [], backup = rec.backup || [], kill = rec.kill || [];
+    const sp = rec.special;
+    recPanel = `
+      <div class="panel">
+        <div class="panel-head"><h2>号码推荐 · 打分排序</h2>
+          <span class="hint">分数 = 长期频数 z×0.20 + 近 50 期热度 z×0.20 + 遗漏回补×0.16 + 与上期共现 z×0.10 + Poisson–Gamma 收缩后验 z×0.16 + 马尔可夫条件 lift z×0.18</span></div>
+        <div class="panel-body">
+          <div class="section-title">核心号（打分靠前 ${core.length} 个，建议优先关注）</div>
+          <div class="pick-row">
+            ${core.map(x => `<div class="pick hot"><span class="ball">${pad2(x.n)}</span><small>${esc(x.tag)} ${x.score.toFixed(2)}</small></div>`).join('')}
+          </div>
+          ${sp ? `
+          <div class="section-title">特别号推荐（${sp.pool} 选 ${sp.pick}）</div>
+          <div class="pick-row">
+            ${sp.recommend.map(x => `<div class="pick hot"><span class="ball blue">${pad2(x.n)}</span><small>${x.score.toFixed(2)}</small></div>`).join('')}
+          </div>` : ''}
+          <div class="section-title">备选号</div>
+          <div class="pick-row">
+            ${backup.map(x => `<div class="pick"><span class="ball">${pad2(x.n)}</span><small>${esc(x.tag)} ${x.score.toFixed(2)}</small></div>`).join('')}
+          </div>
+          ${kill.length ? `
+          <div class="section-title">打分尾部号（仅统计打分靠后，不代表不会开出）</div>
+          <div class="pick-row">
+            ${kill.map(x => `<div class="pick kill"><span class="ball">${pad2(x.n)}</span><small>${x.score.toFixed(2)}</small></div>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  /* ---- 统计与概率模型 ---- */
+  const mdl = rec.models;
+  let modelPanel = '';
+  if(mdl){
+    const pc1 = v => (v == null ? '—' : (v * 100).toFixed(1) + '%');
+    const pc2 = v => (v == null ? '—' : (v * 100).toFixed(2) + '%');
+    const fus = mdl.fusion || {}, mk = mdl.markov || {}, mc = mdl.montecarlo || {};
+    const bt = mdl.bootstrap || {}, hg = mdl.hypergeom, spm = mdl.special;
+    const w = fus.weights || {};
+    const wTxt = `历史频率 ${w.hist} · EWMA ${w.ewma} · 贝叶斯后验 ${w.bayes} · 马尔可夫 ${w.markov}`;
+
+    const cardHtml = (mdl.cards || []).map(c => `
+      <div class="stat">
+        <div class="k">${esc(c.name)}</div>
+        <div class="v" style="font-size:16px">${esc(c.value)}</div>
+        <div class="d">${esc(c.hint)}</div>
+      </div>`).join('');
+
+    /* 号码级概率校准 / 按位融合表 */
+    let head, body, caption;
+    if(rec.digit){
+      head = ['位次', '上期开出', '融合首选', '融合次选', '融合备选', '熵 / 最大熵', '转移偏离'];
+      body = (mdl.positions || []).map(p => `<tr>
+        <td>第 ${p.pos} 位${p.k > 10 ? `<span class="pr-sub">0–${p.k - 1}</span>` : ''}</td>
+        <td><span class="ball">${p.last}</span></td>
+        ${(p.top || []).map(t => `<td><span class="ball">${t.d}</span>
+          <span class="mono">${pc1(t.p_fused)}</span> <span class="muted mono">×${Number(t.lift).toFixed(2)}</span></td>`).join('')}
+        <td class="num">${(p.entropy.h / p.entropy.hmax * 100).toFixed(1)}%</td>
+        <td class="num">${Number(p.markov.dev).toFixed(4)}</td>
+      </tr>`).join('');
+      caption = `按位 log-odds 融合（权重 ${wTxt}，理论基准 ${pctf(1 / (mdl.positions[0] ? mdl.positions[0].k : 10))}）。`
+        + `转移偏离为该位 ${mdl.positions[0] ? mdl.positions[0].k : 10}×${mdl.positions[0] ? mdl.positions[0].k : 10} 转移矩阵与均匀分布的绝对偏离，理论随机下趋近 0。`;
+    } else {
+      head = ['号码', '历史频率', 'EWMA', '贝叶斯后验', '马尔可夫', '融合概率', '提升', '95% 可信区间', '近 50 期二项 p', '当前遗漏（分位）', '近 50 期出现'];
+      body = (mdl.calibration || []).map(c => `<tr${c.lift >= 1.15 ? ' class="mdl-hi"' : ''}>
+        <td><span class="ball">${pad2(c.n)}</span></td>
+        <td class="num">${pc2(c.p_hist)}</td>
+        <td class="num">${pc2(c.p_ewma)}</td>
+        <td class="num">${pc2(c.p_bayes)}</td>
+        <td class="num">${pc2(c.p_markov)}</td>
+        <td class="num"><b>${pc2(c.p_fused)}</b></td>
+        <td class="num">${Number(c.lift).toFixed(2)}×</td>
+        <td class="num mono">${c.ci ? Number(c.ci[0]).toFixed(3) + ' ~ ' + Number(c.ci[1]).toFixed(3) : '—'}</td>
+        <td class="num">${c.binom_p < 0.05 ? `<span class="pill warn">${Number(c.binom_p).toFixed(3)}</span>` : Number(c.binom_p).toFixed(3)}</td>
+        <td class="num">${c.omit} <span class="muted">(${(Number(c.omit_pct) * 100).toFixed(0)}%)</span></td>
+        <td class="num">${c.recent}</td>
+      </tr>`).join('');
+      caption = `融合概率为 ${fus.method || 'log-odds 加权融合'}，理论基准 ${pctf(fus.base)}（提升 1.00× = 与理论概率持平），`
+        + `仅列出融合概率前 10 与末 3 名；贝叶斯后验向理论值收缩，可信区间为 Beta 后验 95% 区间。`;
+    }
+
+    /* 历史 vs 理论零分布 */
+    const rsum = v => (v ? `${v[0]} ~ ${v[1]}` : '—');
+    const cmp = `<div class="table-wrap" style="max-height:none"><table>
+      <thead><tr><th>口径</th><th class="num">和值 80%</th><th class="num">和值 90%</th><th class="num">跨度 80%</th><th class="num">和值均值</th></tr></thead>
+      <tbody>
+        <tr><td>历史实测</td><td class="num">${rsum(rg.sum80)}</td><td class="num">${rsum(rg.sum90)}</td>
+          <td class="num">${rsum(rg.span80)}</td><td class="num">${bt.obs_mean != null ? bt.obs_mean : '—'}</td></tr>
+        <tr><td>蒙特卡洛零分布 <span class="pill">${nf.format(mc.sims || 0)} 次</span></td>
+          <td class="num">${mc.sum ? mc.sum.p10 + ' ~ ' + mc.sum.p90 : '—'}</td>
+          <td class="num">${mc.sum ? mc.sum.p5 + ' ~ ' + mc.sum.p95 : '—'}</td>
+          <td class="num">${mc.span ? mc.span.p10 + ' ~ ' + mc.span.p90 : '—'}</td>
+          <td class="num">${mc.sum ? mc.sum.mean : '—'}</td></tr>
+        <tr><td>Bootstrap 95% 区间 <span class="pill">${nf.format(bt.iters || 0)} 次</span></td>
+          <td class="num" colspan="2">均值 ${rsum(bt.mean_ci)}</td>
+          <td class="num" colspan="2">中位数 ${rsum(bt.median_ci)}</td></tr>
+      </tbody></table></div>`;
+
+    const hgTbl = (hg && hg.length) ? `
+      <div class="table-wrap" style="max-height:none"><table>
+        <thead><tr><th>命中个数 m</th><th class="num">理论概率</th><th class="num">约 1 / N</th></tr></thead>
+        <tbody>${hg.map(x => `<tr><td>中 ${x.match} 个${x.match >= (rec.code === 'kl8' ? 10 : rec.pick) ? '（全中）' : ''}</td>
+          <td class="num">${(x.prob * 100).toFixed(4)}%</td><td class="num">${nf.format(Math.round(1 / x.prob))}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div class="mdl-note">超几何分布：从 ${rec.pool} 个号中开出 ${rec.pick} 个，固定投注 ${rec.code === 'kl8' ? 10 : rec.pick} 个主号（不含特别号）时命中 m 个的理论概率。</div>` : '';
+
+    const spTbl = spm ? `
+      <div class="section-title">特别号模型（${spm.pool} 选 ${spm.pick}）</div>
+      <div class="table-wrap" style="max-height:none"><table>
+        <thead><tr><th>号码</th><th class="num">融合概率</th><th class="num">提升</th><th class="num">贝叶斯后验</th></tr></thead>
+        <tbody>${(spm.top || []).map(t => `<tr><td><span class="ball blue">${pad2(t.n)}</span></td>
+          <td class="num">${pc2(t.p_fused)}</td><td class="num">${Number(t.lift).toFixed(2)}×</td>
+          <td class="num">${pc2(t.p_bayes)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div class="mdl-note">特别号熵 ${spm.entropy.h} / ${spm.entropy.hmax} bit（占 ${(spm.entropy.ratio * 100).toFixed(1)}%）；`
+        + `马尔可夫 出→出 ${pc1(spm.p11)}、漏→出 ${pc1(spm.p01)}，理论上均应等于 ${pc1(spm.pick / spm.pool)}。</div>` : '';
+
+    /* ---- 学术模型：随机性检验 / 贝叶斯收缩 / 赌注理论 ---- */
+    const ac = mdl.academic;
+    let acadPanel = '';
+    if(ac){
+      const acCard = (ac.cards || []).map(c => `
+        <div class="stat">
+          <div class="k">${esc(c.name)}</div>
+          <div class="v" style="font-size:15px">${esc(c.value)}</div>
+          <div class="d">${esc(c.hint)}</div>
+        </div>`).join('');
+
+      const pcell = p => (p == null ? '—'
+        : (p < 0.001 ? `<span class="pill warn">${Number(p).toExponential(2)}</span>` : Number(p).toFixed(4)));
+      const allRandom = (ac.tests || []).every(t => t.p == null || t.p >= 0.05);
+
+      const testTbl = `
+        <div class="section-title">随机性 · 独立性检验</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th>检验</th><th>作用对象</th><th>统计量</th><th class="num">p 值</th><th>结论</th><th>文献</th></tr></thead>
+          <tbody>${(ac.tests || []).map(t => `<tr><td>${esc(t.name)}</td><td class="muted">${esc(t.scope)}</td>
+            <td class="mono">${esc(t.stat)}</td><td class="num">${pcell(t.p)}</td>
+            <td class="muted">${esc(t.verdict)}</td><td class="muted">${esc(t.ref)}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="mdl-note">各检验的原假设都是“序列独立同分布 / 各位均匀”。${allRandom
+          ? '本期所有检验均未拒绝原假设，说明历史序列与独立随机不可区分。'
+          : '存在 p&lt;0.05 的项，但需先经下方 BH-FDR 多重检验校正，多数在样本量下属于常见波动。'}</div>`;
+
+      const fdr = ac.fdr || {};
+      const fdrTbl = (fdr.rows || []).length ? `
+        <div class="section-title">BH-FDR 多重检验校正</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th>${rec.digit ? '位次' : '号码'}</th><th class="num">原始 p</th><th class="num">q 值（BH）</th><th>q ≤ 0.05 显著</th></tr></thead>
+          <tbody>${fdr.rows.map(x => `<tr><td>${rec.digit ? '第 ' + x.n + ' 位' : `<span class="ball">${pad2(x.n)}</span>`}</td>
+            <td class="num">${Number(x.p).toFixed(4)}</td><td class="num">${Number(x.q).toFixed(4)}</td>
+            <td>${x.sig ? '<span class="pill warn">显著</span>' : '<span class="muted">不显著</span>'}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="mdl-note">${esc(fdr.note)}</div>` : '';
+
+      const dch = ac.dirichlet, pgm = ac.poisson;
+      const dTbl = dch ? `
+        <div class="section-title">Dirichlet–Multinomial 后验（前 8 位）</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th>号码</th><th class="num">后验边际概率</th><th class="num">提升</th></tr></thead>
+          <tbody>${dch.top.map(t => `<tr><td><span class="ball">${pad2(t.n)}</span></td>
+            <td class="num">${pc2(t.p)}</td><td class="num">${Number(t.lift).toFixed(2)}×</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="mdl-note">${esc(dch.note)}</div>` : '';
+      const pTbl = pgm ? `
+        <div class="section-title">Poisson–Gamma 经验贝叶斯收缩（前 8 位）</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th>号码</th><th class="num">后验强度 λ</th><th class="num">后验概率</th><th class="num">提升</th></tr></thead>
+          <tbody>${pgm.top.map(t => `<tr><td><span class="ball">${pad2(t.n)}</span></td>
+            <td class="num">${Number(t.lam).toFixed(2)}</td><td class="num">${pc2(t.p)}</td>
+            <td class="num">${Number(t.lift).toFixed(2)}×</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="mdl-note">${esc(pgm.note)}</div>` : '';
+
+      const kel = ac.kelly || {}, evv = ac.ev || {}, gm = ac.geom, wh = ac.wheel;
+      const theoRow = (k, v, note) => `<tr><td>${k}</td><td class="mono">${v}</td><td class="muted">${note}</td></tr>`;
+      const theoTbl = `
+        <div class="section-title">赌注理论与返奖结构</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th>项目</th><th>结果</th><th>说明</th></tr></thead>
+          <tbody>
+            ${theoRow('Kelly 最优投注比例',
+              kel.f_star == null ? '—' : (kel.f_star * 100).toFixed(2) + '%',
+              `赔率 b=${kel.mult == null ? '—' : Number(kel.mult).toFixed(0)}、头奖概率 1/${kel.p_win ? nf.format(Math.round(1 / kel.p_win)) : '—'}；负期望时 Kelly 解为 0，理性策略是不投注`)}
+            ${theoRow('头奖期望等待期',
+              kel.wait == null ? '—' : nf.format(Math.round(kel.wait)) + ' 期',
+              `每期独立时，投注 ${nf.format(kel.draws_in || 1000)} 期至少中一次的概率仅 ${kel.hit == null ? '—' : (kel.hit * 100).toFixed(2) + '%'}`)}
+            ${theoRow('实测返奖率',
+              evv.rate == null ? '—' : (evv.rate * 100).toFixed(1) + '%',
+              esc(evv.note))}
+            ${theoRow('遗漏 vs 几何分布',
+              gm ? `A²=${Number(gm.A2).toFixed(2)} · D=${Number(gm.D).toFixed(4)}` : '样本不足',
+              gm ? `${esc(gm.verdict)}（n=${nf.format(gm.n)}，p̂=${Number(gm.phat).toFixed(4)}）` : '遗漏间隔样本少于 60 个，不做拟合检验')}
+          </tbody></table></div>`;
+
+      const whTbl = wh ? `
+        <div class="section-title">全轮转覆盖（${wh.v} 个号 · ${wh.ticket} 码注）</div>
+        <div class="table-wrap" style="max-height:none"><table>
+          <thead><tr><th class="num">所选号中开出 j 个</th><th class="num">出现概率</th><th class="num">至少命中</th></tr></thead>
+          <tbody>${wh.rows.map(x => `<tr><td class="num">${x.j}</td><td class="num">${(x.p * 100).toFixed(2)}%</td>
+            <td class="num">${x.best}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="mdl-note">共 ${nf.format(wh.bets)} 注、${nf.format(wh.cost)} 元；轮转矩阵（covering design）只保证覆盖结构，不改变单注中奖概率。</div>` : '';
+
+      acadPanel = `
+      <div class="panel">
+        <div class="panel-head"><h2>学术模型 · 深入检验</h2>
+          <span class="hint">Dirichlet–Multinomial · Poisson–Gamma 经验贝叶斯 · BH-FDR · 游程 · NIST SP 800-22 · Ljung–Box · 马尔可夫 χ² · Anderson–Darling · Kelly · 轮转覆盖</span></div>
+        <div class="panel-body">
+          <div class="stat-grid">${acCard}</div>
+          ${testTbl}
+          ${fdrTbl}
+          ${dTbl}
+          ${pTbl}
+          ${theoTbl}
+          ${whTbl}
+          <div class="section-title">参考文献</div>
+          <div class="mdl-note" style="line-height:1.9">${(ac.refs || []).map((x, i) => `[${i + 1}] ${esc(x)}`).join('<br>')}</div>
+        </div>
+      </div>`;
+    }
+
+    modelPanel = `
+      <div class="panel">
+        <div class="panel-head"><h2>统计与概率模型 · 指标卡</h2>
+          <span class="hint">EWMA · 经验贝叶斯 · 马尔可夫 · 二项检验 · 几何遗漏 · log-odds 融合 · 熵/KL · 蒙特卡洛 · Bootstrap · 超几何</span></div>
+        <div class="panel-body"><div class="stat-grid" style="margin-bottom:0">${cardHtml}</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>${rec.digit ? '按位融合概率 · 模型校准' : '号码概率校准 · 模型融合'}</h2>
+          <span class="hint">同一期同一号码用 4 个模型分别估计，再做 log-odds 加权融合</span></div>
+        <div class="panel-body">
+          <div class="mdl-w"><b>融合权重</b>：${wTxt}；基准概率 p₀ = ${pctf(fus.base)}${rec.digit ? '' : `（= ${rec.pick} / ${rec.pool}）`}。<br>
+            马尔可夫实测：出→出 ${pc2(mk.p11)}、漏→出 ${pc2(mk.p01)}，理论边际 ${pc2(mk.base)} —— 两组若贴近基准，说明历史开奖无可被利用的“记忆性”。</div>
+          <div class="table-wrap" style="max-height:none">
+            <table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>
+          </div>
+          <div class="mdl-note">${caption}</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>理论零分布对照</h2>
+          <span class="hint">历史实测区间与“完全随机”模拟结果的对照，偏差即抽样波动</span></div>
+        <div class="panel-body">
+          <div class="section-title">和值 / 跨度：历史实测 vs 蒙特卡洛 vs Bootstrap</div>
+          ${cmp}
+          <div class="mdl-note">蒙特卡洛为均匀随机独立抽样得到的理论分布；Bootstrap 为对历史和值有放回重采样得到的抽样误差区间。三行越接近，越说明历史数据与独立随机不可区分。</div>
+          ${hgTbl ? `<div class="section-title">超几何命中概率</div>${hgTbl}` : ''}
+          ${spTbl}
+        </div>
+      </div>${acadPanel}`;
+  }
+
+  /* ---- 5 注组合 ---- */
+  const head = rec.digit
+    ? ['#', '号码', '和值', '跨度', '形态', '打分']
+    : ['#', '号码', '和值', '跨度', '奇偶', '大小', '连号', '类型', '打分'];
+  const rows = (rec.tickets || []).map((t, i) => {
+    const nums = t.nums.map(n => `<span class="ball">${rec.digit ? n : pad2(n)}</span>`).join('');
+    const sp = (t.sp || []).map(n => `<span class="ball blue">${pad2(n)}</span>`).join('');
+    if(rec.digit){
+      return `<tr><td>${i + 1}</td><td>${nums}</td><td class="num">${t.sum}</td>
+        <td class="num">${t.span}</td><td>${esc(t.shape || '—')}</td><td class="num">${t.score.toFixed(3)}</td></tr>`;
+    }
+    return `<tr><td>${i + 1}</td><td>${nums}${sp}</td><td class="num">${t.sum}</td>
+      <td class="num">${t.span}</td><td class="num">${t.odd}奇/${t.nums.length - t.odd}偶</td>
+      <td class="num">${t.big}大/${t.nums.length - t.big}小</td><td class="num">${t.run}</td>
+      <td><span class="tag">${esc(t.type)}</span></td><td class="num">${t.score.toFixed(3)}</td></tr>`;
+  }).join('');
+
+  const ticketPanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>组合推荐 · ${rec.digit ? '5 注直选' : '5 注单式'}</h2>
+        <span class="hint">${esc(rec.sample_note || '')}</span>
+      </div>
+      <div class="table-wrap" style="max-height:none">
+        <table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+      </div>
+    </div>`;
+
+  /* ---- 复式建议 ---- */
+  const par = rec.parlay;
+  let parlay = '';
+  if(par){
+    const numBall = n => `<span class="ball">${rec.digit ? n : pad2(n)}</span>`;
+    const fmtGroup = g => Array.isArray(g[0])
+      ? g.map(a => `<span class="mono" style="background:#eef4ff;color:#1d4ed8;border-radius:8px;padding:3px 7px;font-weight:700">${a.join('/')}</span>`).join(' ')
+      : g.map(numBall).join('');
+    const groups = [];
+    if(par.front && par.front.length) groups.push(fmtGroup(par.front));
+    if(par.back && par.back.length) groups.push(fmtGroup(par.back));
+
+    parlay = `
+      <div class="panel">
+        <div class="panel-head"><h2>复式 / 覆盖推荐</h2>
+          <span class="hint">用更少注数覆盖更多号码组合，投入相应增加</span></div>
+        <div class="panel-body">
+          <div class="section-title">${esc(par.label || '')}</div>
+          <div class="pick-row">
+            ${groups.map((g, i) => `<div style="display:flex;flex-wrap:wrap;gap:2px">${g}</div>${i < groups.length - 1 ? '<div class="pr-sub" style="align-self:center">+</div>' : ''}`).join('')}
+          </div>
+          <div class="hint" style="margin-top:12px">共 <b>${nf.format(par.bets)}</b> 注 × 2 元 = <b>${nf.format(par.cost)}</b> 元${rec.digit ? '<br>每格为该位候选数字（用 / 分隔），从左到右依次对应第 1 位至最后一位' : ''}</div>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('pr-body').innerHTML = cards + recPanel + modelPanel + ticketPanel + parlay + `
+    <div class="notice">以上推荐由历史统计的启发式打分与概率模型校准自动生成，不构成任何中奖承诺，也不改变每期独立随机的本质。请理性购彩、量力而行。</div>`;
+}
+
+/* ------------------------------------------------------------------ 预测盈亏 */
+let pnlPick = null;
+
+const pnlMoney = v => (v == null || !isFinite(Number(v))) ? '—' : nf.format(Math.round(Number(v)));
+const pnlSigned = v => {
+  if(v == null || !isFinite(Number(v))) return '<span class="muted">—</span>';
+  const n = Number(v), abs = nf.format(Math.abs(Math.round(n)));
+  if(n > 0) return `<span class="pnl-pos">+${abs}</span>`;
+  if(n < 0) return `<span class="pnl-neg">−${abs}</span>`;
+  return `<span class="muted">0</span>`;
+};
+const pnlPct = v => (v == null || !isFinite(Number(v))) ? '—' : (Number(v) * 100).toFixed(1) + '%';
+const pnlDigit = code => code === '3d' || code === 'qxc';
+
+async function renderPnl(el){
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载预测台账…</div>';
+  let data;
+  try{ data = await loadJSON('pnl'); }
+  catch(e){ el.innerHTML = errBox(e, 'data/pnl.json'); return; }
+
+  const lots = data.lotteries || [];
+  if(!lots.length){ el.innerHTML = '<div class="empty">暂无预测台账，请先运行 python ledger.py</div>'; return; }
+  const cur = lots.find(l => l.code === pnlPick) || lots[0];
+  pnlPick = cur.code;
+
+  const T = data.totals || {};
+
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>预测盈亏 · 实盘台账</h2>
+          <div class="hint">只统计真正发出过的预测：从首期预测起逐期留档，开奖后按真实号码与官方单注奖金结算</div>
+        </div>
+        <div class="field"><label>彩种</label><select id="pn-lot"></select></div>
+      </div>
+      <div class="panel-body" style="padding:12px 18px"><div class="hint" id="pn-meta"></div></div>
+    </div>
+    <div class="notice">
+      ${esc(data.note || '')}<br>
+      <span class="muted">更新于 ${esc(data.generated_at || '—')} · 首期预测 ${esc(data.first_at || '—')} · 单注 ${data.price || 2} 元 · ${esc(data.method || '')}</span>
+    </div>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="k">累计投入<span class="pill">已结算 ${nf.format(T.settled || 0)} 期</span></div>
+        <div class="v">${pnlMoney(T.cost)}<span class="pr-sub">元</span></div>
+        <div class="d">只计已开奖的期次；另有 ${nf.format(T.pending || 0)} 期已推荐、等待开奖</div>
+      </div>
+      <div class="stat">
+        <div class="k">累计奖金</div>
+        <div class="v">${pnlMoney(T.prize)}<span class="pr-sub">元</span></div>
+        <div class="d">实际返奖率 ${pnlPct(T.cost ? T.prize / T.cost : null)}（彩票规则返奖率约 50%）</div>
+      </div>
+      <div class="stat">
+        <div class="k">累计净盈亏</div>
+        <div class="v">${pnlSigned(T.net)}<span class="pr-sub">元</span></div>
+        <div class="d">回报率 ${pnlPct(T.roi)} · 全部来自真实预测，不含历史回测</div>
+      </div>
+      <div class="stat">
+        <div class="k">待结算</div>
+        <div class="v">${nf.format(T.pending || 0)}<span class="pr-sub">期</span></div>
+        <div class="d">开奖数据更新后自动结算，无需人工干预</div>
+      </div>
+    </div>
+    <div id="pn-body"></div>`;
+
+  const sel = document.getElementById('pn-lot');
+  sel.innerHTML = lots.map(l => `<option value="${l.code}">${esc(l.name)}</option>`).join('');
+  sel.value = cur.code;
+  sel.onchange = () => { pnlPick = sel.value; paintPnl(lots.find(l => l.code === pnlPick), lots); };
+  paintPnl(cur, lots);
+}
+
+function pnlCurveSvg(pp){
+  const W = 920, H = 250, L = 80, R = 22, T = 18, B = 34;
+  const cum = pp.map(p => p.cum_net);
+  const vals = cum.concat([0]);
+  const low = Math.min.apply(null, vals), high = Math.max.apply(null, vals);
+  const gap = (high - low) || 1;
+  const lo = low - gap * 0.10, hi = high + gap * 0.10;
+  const X = i => L + (W - L - R) * (pp.length < 2 ? 0.5 : i / (pp.length - 1));
+  const Y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const line = pp.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(p.cum_net).toFixed(1)}`).join(' ');
+
+  const ticks = [hi - gap * 0.10, (hi + lo) / 2, lo + gap * 0.10];
+  const grid = ticks.map(v => `
+    <line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${W - R}" y2="${Y(v).toFixed(1)}" stroke="#eef2f8" stroke-width="1"/>
+    <text x="${L - 10}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end" font-size="11" fill="#94a3b8">${nf.format(Math.round(v))}</text>`).join('');
+
+  const zero = (0 >= lo && 0 <= hi) ? `
+    <line x1="${L}" y1="${Y(0).toFixed(1)}" x2="${W - R}" y2="${Y(0).toFixed(1)}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="${W - R}" y="${(Y(0) - 6).toFixed(1)}" text-anchor="end" font-size="11" fill="#94a3b8">盈亏平衡线</text>` : '';
+
+  const last = pp[pp.length - 1];
+  const endDot = `<circle cx="${X(pp.length - 1).toFixed(1)}" cy="${Y(last.cum_net).toFixed(1)}" r="3.5" fill="#1d4ed8"/>
+    <text x="${(X(pp.length - 1) - 4).toFixed(1)}" y="${(Y(last.cum_net) - 10).toFixed(1)}" text-anchor="end" font-size="11" fill="#1d4ed8">${nf.format(Math.round(last.cum_net))}</text>`;
+
+  return `<svg class="pnl-curve" viewBox="0 0 ${W} ${H}" role="img" aria-label="累计净盈亏曲线">
+    ${grid}
+    ${zero}
+    <path d="${line}" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linejoin="round"/>
+    ${endDot}
+    <text x="${L}" y="${H - 10}" font-size="11" fill="#94a3b8">${esc(pp[0].issue)} ${esc(pp[0].date || '')}</text>
+    <text x="${W - R}" y="${H - 10}" text-anchor="end" font-size="11" fill="#94a3b8">${esc(last.issue)} ${esc(last.date || '')}</text>
+  </svg>
+  <div class="pnl-legend">
+    <span><i style="background:#1d4ed8"></i>已结算期次的累计净盈亏</span>
+    <span><i style="background:#94a3b8"></i>盈亏平衡线</span>
+  </div>`;
+}
+
+function paintPnl(lot, lots){
+  const all = (lots && lots.length) ? lots : [lot];
+  const s = lot.summary || {};
+  const ntOf = code => (n) => pnlDigit(code) ? String(n) : pad2(n);
+  const drawBalls = (code, d) => d
+    ? (d.nums || []).map(ntOf(code)).map(n => `<span class="ball">${n}</span>`).join('')
+      + (d.sp || []).map(n => `<span class="ball blue">${pad2(n)}</span>`).join('')
+    : '<span class="muted">待开奖</span>';
+  const pickTxt = (code, e) => {
+    const t = (e.tickets || [])[0];
+    if(!t) return '<span class="muted">—</span>';
+    const nt = ntOf(code);
+    const ns = (t.nums || []).map(nt).join(' ');
+    const sp = (t.sp || []).map(pad2).join(' ');
+    return `<span class="mono" style="font-size:11px">${ns}${sp ? ' +' + sp : ''}</span>`
+      + ((e.tickets || []).length > 1 ? ` <span class="muted">等 ${nf.format((e.tickets || []).length)} 注</span>` : '');
+  };
+  const statusPill = e => e.status === 'settled'
+    ? '<span class="pill ok">已结算</span>' : '<span class="pill warn">待开奖</span>';
+  const hitTxt = e => {
+    if(e.status !== 'settled') return '<span class="muted">—</span>';
+    const a = ((e.single || {}).hits || []).map(h => `单式 ${esc(h.level)} ${pnlMoney(h.amount)} 元`);
+    const b = ((e.parlay_result || {}).hits || []).map(h => `复式 ${esc(h.level)}×${nf.format(h.count)}`);
+    return a.concat(b).join('<br>') || '<span class="muted">未中奖</span>';
+  };
+
+  const curSettled = (lot.entries || []).filter(e => e.status === 'settled');
+  document.getElementById('pn-meta').innerHTML =
+    `${esc(lot.name)} · 已结算 <b>${nf.format(s.periods || 0)}</b> 期 · 待开奖 <b>${nf.format(s.pending || 0)}</b> 期
+     · 台账起于 ${esc(lot.first_at || '—')}
+     <span class="pr-sub">每期 5 注单式（10 元）+ 1 组复式（按方案注数 × 2 元）</span>`;
+
+  /* ---- 本期预测（全部彩种） ---- */
+  const curRows = all.map(l => {
+    const c = l.current || {}, settled = c.status === 'settled';
+    return `<tr${l.code === lot.code ? ' style="background:#f0f6ff"' : ''}>
+      <td><span class="tag" style="border-left:3px solid ${COLORS[l.code] || '#94a3b8'}">${esc(l.name)}</span></td>
+      <td><span class="mono">${esc(c.issue || '—')}</span><br><span class="muted">${esc(c.date || '')}</span></td>
+      <td style="min-width:150px">${drawBalls(l.code, c.draw)}</td>
+      <td style="min-width:180px">${pickTxt(l.code, c)}</td>
+      <td class="num">${pnlMoney(c.cost_total)}</td>
+      <td class="num">${settled ? pnlMoney(c.prize_total) : '<span class="muted">—</span>'}</td>
+      <td class="num">${settled ? pnlSigned(c.net) : '<span class="muted">—</span>'}</td>
+      <td class="num">${pnlSigned(c.cum_net)}</td>
+      <td>${statusPill(c)}</td>
+    </tr>`;
+  }).join('');
+
+  const curPanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>本期预测 · 待结算与最近结算</h2>
+        <span class="hint">每个彩种只显示当前这一期（最新登记）；开奖后由每日更新自动结算</span>
+      </div>
+      <div class="table-wrap" style="max-height:none"><table>
+        <thead><tr><th>彩种</th><th>目标期号</th><th>真实开奖</th><th>推荐首注</th>
+          <th class="num">投入</th><th class="num">奖金</th><th class="num">本期盈亏</th><th class="num">累计盈亏</th><th>状态</th></tr></thead>
+        <tbody>${curRows}</tbody>
+      </table></div>
+    </div>`;
+
+  /* ---- 分彩种统计卡 ---- */
+  const cards = `
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="k">合计投入<span class="pill">${nf.format(s.periods || 0)} 期</span></div>
+        <div class="v">${pnlMoney(s.cost)}<span class="pr-sub">元</span></div>
+        <div class="d">仅统计已开奖的预测期次</div>
+      </div>
+      <div class="stat">
+        <div class="k">合计奖金</div>
+        <div class="v">${pnlMoney(s.prize)}<span class="pr-sub">元</span></div>
+        <div class="d">返奖率 ${pnlPct(s.cost ? s.prize / s.cost : null)}</div>
+      </div>
+      <div class="stat">
+        <div class="k">净盈亏</div>
+        <div class="v">${pnlSigned(s.net)}<span class="pr-sub">元</span></div>
+        <div class="d">回报率 ${pnlPct(s.roi)} · 每期平均 ${pnlSigned(s.periods ? s.net / s.periods : null)} 元</div>
+      </div>
+      <div class="stat">
+        <div class="k">中奖期数</div>
+        <div class="v">${nf.format(s.hit_periods || 0)}<span class="pr-sub">/ ${nf.format(s.periods || 0)} 期</span></div>
+        <div class="d">占比 ${pnlPct(s.periods ? (s.hit_periods || 0) / s.periods : null)}</div>
+      </div>
+    </div>`;
+
+  /* ---- 累计净盈亏曲线 ---- */
+  const curvePanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>累计净盈亏曲线</h2>
+        <span class="hint">横轴为已结算期次，纵轴为从首次结算起的累计净盈亏（元）</span>
+      </div>
+      <div class="panel-body">${curSettled.length >= 2 ? pnlCurveSvg(curSettled)
+        : '<div class="empty">已结算期次不足 2 期，暂不绘制曲线；开奖后自动累积</div>'}</div>
+    </div>`;
+
+  /* ---- 奖级命中分布 ---- */
+  const lvArr = (s.levels || []);
+  const lvTotal = lvArr.reduce((t, x) => t + (x.amount || 0), 0);
+  const lvPanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>奖级命中分布</h2>
+        <span class="hint">按官方公布的当期单注奖金结算；无人中出的浮动奖级回退到最近一次公布值</span>
+      </div>
+      ${lvArr.length ? `<div class="table-wrap" style="max-height:none"><table>
+        <thead><tr><th>奖级</th><th class="num">单式中奖注数</th><th class="num">单式奖金(元)</th>
+          <th class="num">复式中奖注数</th><th class="num">复式奖金(元)</th><th class="num">合计奖金(元)</th><th class="num">占总奖金</th></tr></thead>
+        <tbody>${lvArr.map(x => `<tr>
+          <td><b>${esc(x.level)}</b></td>
+          <td class="num">${x.single ? nf.format(x.single) : '—'}</td>
+          <td class="num">${x.s_amount ? pnlMoney(x.s_amount) : '—'}</td>
+          <td class="num">${x.parlay ? nf.format(x.parlay) : '—'}</td>
+          <td class="num">${x.p_amount ? pnlMoney(x.p_amount) : '—'}</td>
+          <td class="num"><b>${pnlMoney(x.amount)}</b></td>
+          <td class="num">${pnlPct(lvTotal ? x.amount / lvTotal : null)}</td>
+        </tr>`).join('')}
+        <tr><td><b>合计</b></td><td class="num">—</td><td class="num">—</td>
+          <td class="num">—</td><td class="num">—</td>
+          <td class="num"><b>${pnlMoney(lvTotal)}</b></td><td class="num">100.0%</td></tr>
+        </tbody></table></div>` : '<div class="panel-body"><div class="empty">已结算期次内该彩种未中任何奖级</div></div>'}
+      <div class="mdl-note">返奖率约 50% 是彩票的规则设定：无论采用何种选号方法，长期投入 2 元平均只能收回约 1 元。命中率高低只影响奖金分布的形状，不改变期望值。</div>
+    </div>`;
+
+  /* ---- 逐期台账 ---- */
+  const pp = (lot.entries || []).slice().reverse();
+  const detailRows = pp.map(e => `<tr>
+    <td><span class="mono">${esc(e.issue)}</span></td>
+    <td>${esc(e.date || '—')}</td>
+    <td>${esc(e.predicted_at || '—')}</td>
+    <td style="min-width:150px">${drawBalls(lot.code, e.draw)}</td>
+    <td style="min-width:230px">${(e.tickets || []).map(t => {
+      const nt = ntOf(lot.code);
+      return `<span class="mono" style="font-size:11px">${(t.nums || []).map(nt).join(' ')}${(t.sp || []).length ? ' +' + (t.sp || []).map(pad2).join(' ') : ''}</span>`;
+    }).join('<span class="muted"> / </span>')}</td>
+    <td class="num">${pnlMoney(e.cost_total)}</td>
+    <td class="num">${e.status === 'settled' ? pnlMoney(e.prize_total) : '<span class="muted">—</span>'}</td>
+    <td class="num">${e.status === 'settled' ? pnlSigned(e.net) : '<span class="muted">—</span>'}</td>
+    <td class="num">${pnlSigned(e.cum_net)}</td>
+    <td>${statusPill(e)}<br>${hitTxt(e)}</td>
+  </tr>`).join('');
+  const detailPanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>逐期台账 · 预测推荐 vs 真实开奖</h2>
+        <span class="hint">按时间倒序；只包含真实登记过的推荐，不含历史回测</span>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>期号</th><th>开奖日期</th><th>预测时间</th><th>真实开奖</th><th>当期推荐（5 注单式）</th>
+          <th class="num">投入</th><th class="num">奖金</th><th class="num">本期盈亏</th><th class="num">累计盈亏</th><th>状态 / 命中</th></tr></thead>
+        <tbody>${detailRows || '<tr><td colspan="10"><span class="muted">无数据</span></td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+
+  /* ---- 全部彩种横向对比 ---- */
+  const cmpRows = all.map(l => {
+    const ls = l.summary || {}, c = l.current || {};
+    return `<tr${l.code === lot.code ? ' style="background:#f0f6ff"' : ''}>
+      <td><span class="tag" style="border-left:3px solid ${COLORS[l.code] || '#94a3b8'}">${esc(l.name)}</span></td>
+      <td class="num">${nf.format(ls.periods || 0)}</td>
+      <td class="num">${nf.format(ls.pending || 0)}</td>
+      <td class="num">${pnlMoney(ls.cost)}</td>
+      <td class="num">${pnlMoney(ls.prize)}</td>
+      <td class="num">${pnlSigned(ls.net)}</td>
+      <td class="num">${pnlPct(ls.roi)}</td>
+      <td class="num">${nf.format(ls.hit_periods || 0)}</td>
+      <td class="num">${c.status === 'settled' ? pnlSigned(c.net) : '<span class="muted">待开奖</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  const cmpPanel = `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>全部彩种累计</h2>
+        <span class="hint">“本期盈亏”为最近一期已结算推荐的盈亏</span>
+      </div>
+      <div class="table-wrap" style="max-height:none"><table>
+        <thead><tr><th>彩种</th><th class="num">已结算</th><th class="num">待开奖</th><th class="num">投入</th>
+          <th class="num">奖金</th><th class="num">净盈亏</th><th class="num">回报率</th><th class="num">中奖期数</th><th class="num">本期盈亏</th></tr></thead>
+        <tbody>${cmpRows}</tbody>
+      </table></div>
+    </div>`;
+
+  /* ---- 结论 ---- */
+  const allNet = all.reduce((t, l) => t + ((l.summary || {}).net || 0), 0);
+  const allCost = all.reduce((t, l) => t + ((l.summary || {}).cost || 0), 0);
+  const allPrize = all.reduce((t, l) => t + ((l.summary || {}).prize || 0), 0);
+  const allPer = all.reduce((t, l) => t + ((l.summary || {}).periods || 0), 0);
+  const concl = `
+    <div class="notice">
+      <b>结论</b>：自首期预测起共结算 <b>${nf.format(allPer)}</b> 期，投入 <b>${pnlMoney(allCost)}</b> 元、
+      奖金 <b>${pnlMoney(allPrize)}</b> 元、净盈亏 ${pnlSigned(allNet)} 元（回报率 ${pnlPct(allCost ? allNet / allCost : null)}），
+      实际返奖率 ${pnlPct(allCost ? allPrize / allCost : null)}。
+      样本期数越多，结果越会收敛到彩票规则设定的约 50% 返奖率；短期盈亏以波动为主，不能据此推断预测有效。
+    </div>`;
+
+  document.getElementById('pn-body').innerHTML = curPanel + cards + curvePanel + cmpPanel + lvPanel + detailPanel + concl;
+}
+
+/* ------------------------------------------------------------------ 启动 */
+async function boot(){
+  renderTabs();
+  try{
+    const draws = await load('draws');
+    const seen = new Map();
+    for(const r of draws) if(!seen.has(r.lottery_code)) seen.set(r.lottery_code, r.lottery_name);
+    const order = ['ssq','kl8','3d','qlc','dlt','qxc'];
+    state.lotters = [...seen.entries()]
+      .map(([code, name]) => ({code, name}))
+      .sort((a, b) => (order.indexOf(a.code) + 99) - (order.indexOf(b.code) + 99));
+  }catch(e){ /* 总览页会展示错误提示 */ }
+  renderView();
+}
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 运行时日志
+logs/
+data/access.log
+data/update.log
+data/server.log
+
+# 运行时状态与本地数据库（含账号与访问者 IP，不入库）
+data/app.db
+data/app.db-journal
+data/visits.json
+data/update_status.json
+*.tmp
+
+# 抓取原始缓存（体积大，可由 crawl.py 重新生成）
+data/raw/
+
+# 本地截图缓存
+.screenshots/
