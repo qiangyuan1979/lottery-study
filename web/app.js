@@ -845,6 +845,7 @@ function viewHome() {
     const pd = ((state.preds && state.preds.lotteries) || []).find((x) => x.code === m.code);
     const next = pd && pd.next;
     const last = m.last;
+    const nextTag = nextTagHtml(last, next);
     return gcard(esc(m.name), esc(m.desc),
       '<div class="row" style="justify-content:space-between;align-items:flex-start">' +
       '<div><div class="tiny muted">最近一期</div>' +
@@ -854,7 +855,9 @@ function viewHome() {
       '<div class="tiny muted mt8">' + esc(m.draw_days || '') + '</div></div>' +
       '</div>' +
       (next ? '<hr class="sep"><div class="row" style="justify-content:space-between">' +
-        '<div><div class="tiny muted">下期</div><div class="mono mt8">第 ' + esc(next.issue) + ' 期 · ' + esc(next.date) + '</div></div>' +
+        '<div><div class="tiny muted">下期 ' + nextTag + '</div>' +
+        '<div class="mono mt8">第 ' + esc(next.issue) + ' 期 · ' + esc(next.date) +
+        (next.weekday ? ' ' + esc(next.weekday) : '') + '</div></div>' +
         '<a class="btn sm" href="/predict/' + m.code + '">预测</a></div>' : ''));
   }).join('') + '</div>';
 
@@ -903,10 +906,10 @@ function viewPredict() {
     '<div class="row" style="justify-content:space-between;align-items:flex-start;gap:20px">' +
     '<div>' +
     '<div class="tiny muted">推荐用于</div>' +
-    '<div class="mono" style="font-size:20px;font-weight:700">第 ' + esc(next.issue || '—') + ' 期</div>' +
+    '<div class="mono" style="font-size:20px;font-weight:700">第 ' + esc(next.issue || '—') + ' 期 ' + nextTagHtml(last, next) + '</div>' +
     '<div class="tiny muted mt8">开奖日期 ' + esc(next.date || '—') +
-    (next.weekday ? ' · 周' + esc(next.weekday) : '') +
-    (next.basis ? ' · 依据第 ' + esc(next.basis) + ' 期开奖' : '') + '</div>' +
+    (next.weekday ? ' · ' + esc(next.weekday) : '') +
+    (next.basis ? ' · ' + esc(next.basis) : '') + '</div>' +
     '<div class="tiny muted mt8">建模样本 ' + num(it.draws, 0) + ' 期' +
     (it.window ? ' · 窗口自 ' + esc(it.window.start || '') + '（' + esc(it.window.reason || '') + '）' : '') + '</div>' +
     '</div>' +
@@ -1996,6 +1999,14 @@ const DRAW_WD = { ssq: [0, 2, 4], dlt: [1, 3, 6], qlc: [1, 3, 5], kl8: [], '3d':
 function ymd(d) {
   const p = (n) => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+/** 今日开奖状态：最新一期日期=今天即今天已开，下期日期=今天即今天待开，都不是则今天不开 */
+function nextTagHtml(last, next) {
+  const today = ymd(new Date());
+  if (last && last.date === today) return '<span class="tag green">今日已开奖</span>';
+  if (next && next.date === today) return '<span class="tag blue">今日开奖</span>';
+  if (next && next.date > today) return '<span class="tag amber">今日无开奖</span>';
+  return '<span class="tag red">数据待更新</span>';
 }
 function drawsPerWeek(code) {
   const w = DRAW_WD[code];

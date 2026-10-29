@@ -13,6 +13,7 @@
   · 浮动奖级无人中出时回退该奖级最近一次公布值（与 ledger/backtest 一致）。
 """
 import math
+import os
 import random
 from collections import Counter
 
@@ -47,13 +48,21 @@ META = {
 }
 
 _draws = None
+_draws_mt = None
 _pmap = None
+DRAWS_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "draws.csv")
 
 
 def draws():
-    global _draws
-    if _draws is None:
+    """开奖数据；draws.csv 更新后自动重载，服务端无需重启"""
+    global _draws, _draws_mt
+    try:
+        mt = os.path.getmtime(DRAWS_CSV)
+    except OSError:
+        mt = None
+    if _draws is None or mt != _draws_mt:
         _draws = load_draws()
+        _draws_mt = mt
     return _draws
 
 

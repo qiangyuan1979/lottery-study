@@ -117,7 +117,9 @@ CONTENT_TYPES = {
 }
 
 _full_draws = None
+_full_draws_mt = None
 _prize_index = None
+_prize_index_mt = None
 
 
 # ---------------------------------------------------------------- 数据库
@@ -736,10 +738,19 @@ def inject_seo(body, route="/", base=""):
 
 
 # ---------------------------------------------------------------- 数据缓存
+def _csv_mtime(name):
+    """CSV 修改时间，用于判断缓存是否需要重建（每日更新后无需重启服务）"""
+    try:
+        return os.path.getmtime(os.path.join(DATA, name))
+    except OSError:
+        return None
+
+
 def full_draws():
     """完整开奖（不做建模窗口裁剪），供开奖数据页使用"""
-    global _full_draws
-    if _full_draws is None:
+    global _full_draws, _full_draws_mt
+    mt = _csv_mtime("draws.csv")
+    if _full_draws is None or mt != _full_draws_mt:
         out = {}
         with open(os.path.join(DATA, "draws.csv"), encoding="utf-8-sig") as f:
             for r in csv.DictReader(f):
@@ -755,13 +766,15 @@ def full_draws():
         for v in out.values():
             v.sort(key=lambda x: (x["date"], x["issue"]))
         _full_draws = out
+        _full_draws_mt = mt
     return _full_draws
 
 
 def prize_index():
     """{(code, issue): [{level, winners, unit, total}]}"""
-    global _prize_index
-    if _prize_index is None:
+    global _prize_index, _prize_index_mt
+    mt = _csv_mtime("prizes.csv")
+    if _prize_index is None or mt != _prize_index_mt:
         idx = {}
         with open(os.path.join(DATA, "prizes.csv"), encoding="utf-8-sig") as f:
             for r in csv.DictReader(f):
@@ -774,6 +787,7 @@ def prize_index():
                     note=r.get("note") or "",
                 ))
         _prize_index = idx
+        _prize_index_mt = mt
     return _prize_index
 
 

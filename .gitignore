@@ -7,6 +7,7 @@ __pycache__/
 logs/
 data/access.log
 data/update.log
+data/update_run.log
 data/server.log
 
 # 运行时状态与本地数据库（含账号与访问者 IP，不入库）
